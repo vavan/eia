@@ -18,7 +18,7 @@ period = 19
 
 dhcp_config = '/var/lib/dhcp/etc/dhcp_clients.conf'
 
-log_file = '/var/log/easybs.log'
+log_file = '/var/log/easy.log'
 
 def init_log():
     logging.basicConfig(level=logging.DEBUG,
@@ -29,7 +29,7 @@ def init_log():
 
 
 if os.name == 'nt':
-    #for emulation only
+    #for emulation/test only
     dhcp_config = 'dhcp_clients.conf'
     log_file = 'c:/easybs.log'
     web_address = ''
