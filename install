@@ -44,5 +44,7 @@ chmod 0600 ${LOGFILE}
 #Create service
 cp ./easy /etc/init.d
 update-rc.d easy defaults
+update-rc.d easy enable
+
 #insserv -r easybs
 #insserv easybs
