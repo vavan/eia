@@ -9,7 +9,7 @@ sql_credentials = { "host": "127.0.0.1", "user": "easy", "pwd": "zhopa", "databa
 lan = 'eth3'
 
 web_user = 'easy'
-web_address = '192.168.0.1'
+web_address = '10.0.0.37'
 web_port = 80
 
 language = 1
