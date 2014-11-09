@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+    <title>$title</title>
+    <link rel="stylesheet" type="text/css" media="screen,projection,print" href="../newstyle.css" />
+</head>
+
+<form name="mainform" action="$script" method="post" enctype="multipart/form-data">
+
+  <div class="page-container">
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-body">
+            <h1>EasyBS</h1>
+            <h2>$CLIENT_CONSOLE</h2>
+        </div>
+    </div>
+
+
+    <!-- Body -->
+    <div class="main">
+
+      <!-- Navigation -->
+      <div class="main-navigation">
+        <dl class="navigation">
+    		<dt><a href="web_client_main.py?$session_link" class="first">$PARAMETERS_LINK</a></dt>
+    		<dt><a href="web_client_credit.py?$session_link">$CREDITS_LINK</a></dt>
+    		<dt><a href="web_client_debit.py?$session_link">$DEBITS_LINK</a></dt>
+    		<dt><a href="web_client_msg.py?$session_link">$MSG_LINK$msg_unread</a></dt>
+        </dl>                        
+      </div>
+
+      <!-- Main -->
+      <div class="main-content">
+        
+        $derived
+
+      </div>
+    </div>
+
+    <!-- Footer -->      
+    <div class="footer">
+        <p>EasyBS v$version &copy Volodymyr Tymoshchuk 2005-2010</p>
+    </div>
+        
+  </div> 
+
+$session
+</form>
+</body>
+</html>

@@ -1,0 +1,55 @@
+#!/bin/sh
+
+
+### BEGIN INIT INFO
+# Provides:       easybs
+# Required-Start: $network $remote_fs
+# Required-Stop:  
+# Default-Start:  2 3 5
+# Default-Stop:
+# Description:    Start the IPCAD database server
+### END INIT INFO
+
+. /etc/rc.status
+
+rc_reset
+
+EASY_PATH=/usr/easybs
+LOGFILE=/var/log/easybs.log
+
+
+case "$1" in
+
+    start)
+        echo -n "Starting EasyBS services"
+        echo -n "-- Started: " >> ${LOGFILE}
+        date >> ${LOGFILE}
+        ${EASY_PATH}/bin/iproute start
+        ${EASY_PATH}/bin/aaa.py
+        cd ${EASY_PATH}/web && ./http_serv.py
+  
+        rc_status -v
+        ;;
+
+    stop)
+        echo -n "Shutting down EasyBS services"
+        echo -n "-- Stoped: " >> ${LOGFILE}
+        date >> ${LOGFILE}
+        ${EASY_PATH}/bin/iproute stop
+        killall http_serv.py
+
+        rc_status -v
+        ;;
+
+    restart)
+        echo "Restarting service EasyBS "
+        $0 stop
+        $0 start
+        
+        rc_status
+        ;;  
+    
+esac
+rc_exit
+
+

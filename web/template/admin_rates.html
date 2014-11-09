@@ -1,0 +1,33 @@
+
+        <h1 class="pagetitle">$EDIT_RATE</h1>
+        <div class="edit-unit">
+            <fieldset>
+                <legend>&nbsp;$DETAILS_RATE&nbsp;</legend>
+                
+                <p><label class="left">$PRICE:</label>
+                <input type=text value="" class="field" name="price"></p>
+
+                <p><label class="left">$CHANNEL:</label>
+                <input type=text value="" class="field" name="channel"></p>
+
+                <p><label class="left">Type:</label>
+                    <select name="rate" size="1" class="combo">
+                        <option value="model_traf">$RATE_TRAFBASED</option>
+                        <option value="model_day">$RATE_DAYLY</option>
+                        <option value="model_month">$RATE_MONTHLY</option>
+                    </select>
+                </p>
+            </fieldset>
+            <p><input class="left" type="submit" value="Add" name=add>
+            </p>          
+        </div>
+
+        <h1 class="pagetitle">$RATE_CAPTION</h1>
+        <div class="table-unit">
+            <table>
+        	    <tr>
+                    <th class="first"></th><th>$PRICE</th><th>$RATE_TYPE</th><th>$CHANNEL</th>
+                </tr>
+                    $rates
+    		</table>
+        </div>

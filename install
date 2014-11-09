@@ -1,0 +1,50 @@
+#!/bin/bash
+
+INSTDIR=/usr/easybs
+LOGFILE=/var/log/easybs.log
+#IPCAD_DIR=/var/log/ipcad
+
+
+
+#Create, prepare and copy to install dir
+if [ -e ${INSTDIR} ]; then 
+echo ;
+else
+mkdir ${INSTDIR};
+fi
+
+cp -R * ${INSTDIR}/
+rm ${INSTDIR}/install
+chown -R easy:easy ${INSTDIR}/
+chmod 0755 ${INSTDIR}
+chmod -R 0500 ${INSTDIR}/*
+chmod 0700 ${INSTDIR}/bin
+chmod 0700 ${INSTDIR}/cfg
+chmod 0700 ${INSTDIR}/web
+chmod 0700 ${INSTDIR}/web/cgi-bin
+
+
+#Create LOG file
+if [ -e ${INSTDIR} ]; then 
+echo --Install-- >> ${LOGFILE}
+else
+echo --Install-- > ${LOGFILE}
+fi
+
+chown easy:easy ${LOGFILE}
+chmod 0600 ${LOGFILE}
+
+
+#Setup IPCAD
+#if ! [ -e ${IPCAD_DIR} ]; then 
+#mkdir ${IPCAD_DIR}
+#fi
+#if ! [ -e ${IPCAD_DIR}/arc ]; then 
+#mkdir ${IPCAD_DIR}/arc
+#fi
+#cp ./cfg/ipcad.conf /usr/local/etc/
+
+#Create service
+#cp ${INSTDIR}/bin/easybs /etc/init.d
+#insserv -r easybs
+#insserv easybs

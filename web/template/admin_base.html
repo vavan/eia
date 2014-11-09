@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+    <title>$title</title>
+    <link rel="stylesheet" type="text/css" media="screen,projection,print" href="../newstyle.css" />
+</head>
+
+<form name="mainform" action="$script" method="post" enctype="multipart/form-data">
+
+  <div class="page-container">
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-body">
+            <h1>EasyBS</h1>
+            <h2>$ADMIN_CONSOLE</h2>
+        </div>
+    </div>
+
+
+    <!-- Body -->
+    <div class="main">
+
+      <!-- Navigation -->
+      <div class="main-navigation">
+        <dl class="navigation">
+    		<dt><a href="web_admin_add.py?$session_link" class="first">$ADDS_LINK</a></dt>
+    		<dt><a href="web_admin_msg.py?$session_link">$MSG_LINK$msg_unread</a></dt>
+    		<dt><a href="web_admin_clients.py?$session_link">$CLIENT_LINK</a></dt>
+    		<dt><a href="web_admin_provs.py?$session_link">$PROVIDER_LINK</a></dt>
+    		<dt><a href="web_admin_rates.py?$session_link">$TRAF_LINK</a></dt>
+    		<dt><a href="web_admin_settings.py?$session_link">$SETTINGS_LINK</a></dt>
+        </dl>                        
+      </div>
+
+      <!-- Main -->
+      <div class="main-content">
+        
+        $derived
+
+      </div>
+    </div>
+
+    <!-- Footer -->      
+    <div class="footer">
+        <p>EasyBS v$version &copy Volodymyr Tymoshchuk 2005-2010</p>
+    </div>
+        
+  </div> 
+
+$session
+</form>
+</body>
+</html>

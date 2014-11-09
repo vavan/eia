@@ -1,0 +1,72 @@
+/* Common definitions */
+
+*{padding:0; margin:0;}
+ body {font-size:62.5%; background-color:#F2F2F2; font-family:verdana,arial,sans-serif;} 
+.page-container {width:950px; margin:0px auto; margin-top:10px; margin-bottom:10px; border:solid 3px #569FD3; font-size:1.0em; background:#E2F4FF }
+.header {width:950px; height:70px; background:#FFFFFF url(header.jpg);}
+.main {clear:both; width:950px; padding-bottom:30px; }
+.main-navigation {float:left; width:180px; }
+.main-content {float:left; width:690px; margin:0 0 0 50px; }
+.footer {clear:both; width:900px; padding:10px 0 0 0; background:rgb(225,225,225) font-size:1.0em; }
+
+
+.header-body {padding:10px 10px 0px 0px; text-align:right; font-family:verdana,arial,sans-serif; color:#2516AE;}
+.header-body h1 {font-size:220%;}
+.header-body h2 {font-size:120%;}
+
+
+
+/* Tables */
+.table-unit {margin-bottom:10px;}
+.edit-unit {margin-bottom:10px;}
+
+.footer p { margin:0px; width:950px; height:30px; line-height:3em; background:#FFFFFF url(footer.jpg);text-align:center; color:rgb(125,125,125); font-weight:bold; font-size:110%; }
+
+
+
+/* text */
+.navigation {width:199px; padding:30px 0px 0px 10px; }
+.navigation dt a.first, .navigation dt a:visited.first {display:block; min-height:2.0em /*Non-IE6*/; height:auto !important; height:2.0em /*IE6*/; line-height:2.0em; padding:0px 10px 0px 20px;  border-top: solid 1px rgb(200,200,200); text-decoration:none; color:#2516AE; font-weight:bold; font-size:150%;}
+.navigation dt a, .navigation dt a:visited {display:block; min-height:2.0em /*Non-IE6*/; height:auto !important; height:2.0em /*IE6*/; line-height:2.0em; padding:0px 10px 0px 20px;  border-bottom: solid 1px rgb(200,200,200); text-decoration:none; color:#2516AE; font-weight:bold; font-size:150%;}
+.navigation dt a:hover {background-color:#7DA1FF; color:rgb(42,90,138); text-decoration:none;}
+
+
+
+/* MAIN CONTENT */
+.main-content h1.pagetitle {margin:0 0 0.4em 0; padding:20px 0 2px 0; border-bottom:solid 7px #7DA1FF; font-family:"trebuchet ms",arial,sans-serif; color:#2516AE; font-weight:bold; font-size:220%;}
+
+.table-unit table {clear:both; width:100%; table-layout: auto; border-collapse:collapse; empty-cells:show; background-color:#FFFC8B;}
+.table-unit table th.first {border-left:0px; padding:4px 0px 4px 0px; background-color:#3046AA; text-align:center; color:#3FA8FF; font-weight:bold; font-size:170%; }
+.table-unit table td.first {border-left:0px; font-size:120%;}
+.table-unit table td.red {color:#FF0000;font-weight:bold;  }
+.table-unit table td.selected {font-weight:bold;  }
+.table-unit table th {border-left:2px solid #f4ffd4;padding:4px 0px 4px 0px; background-color:#3046AA; text-align:center; color:#3FA8FF; font-weight:bold; font-size:170%; }
+.table-unit table td {border-left:2px solid #f4ffd4; font-size:120%;}
+.table-unit table td a, .table-unit table td a:visited { display:block; text-decoration:none; color:#2516AE; font-weight:bold; font-size:100%;}  
+.table-unit table td a:hover {background-color:#7DA1FF; color:rgb(42,90,138); text-decoration:none;}
+
+.table-unit table tr.bottom {font-weight:bold; font-size:170%;text-align:center; color:#2516AE; background-color:#B5B5B5;}
+.table-unit table tr.odd {text-align:center; font-weight:normal; color:rgb(80,80,80); background-color:#D5D5D5; }
+.table-unit table tr.even {text-align:center; font-weight:normal; color:rgb(80,80,80); background-color:#F2EFEF; }
+
+.edit-unit table {clear:both; width:100%; table-layout: fixed; border-collapse:collapse; empty-cells:show; background-color:#FFEBA4;}
+.edit-unit table td {background-color:#F5D778; text-align:left; color:#2516AE; font-weight:bold; font-size:170%; }
+.edit-unit table td.small {padding-left:40px; background-color:#F5D778; text-align:left; color:#2516AE; font-weight:bold; font-size:70%; }
+.edit-unit table td.right {text-align:right; }
+
+.simple-unit {width:97%; margin:2.0em 0 0 0; padding:10px 10px 10px 10px; border:solid 1px rgb(200,200,200); background-color:rgb(240,240,240);}
+.edit-unit {width:97%; margin:2.0em 0 0 0; padding:10px 10px 30px 10px; border:solid 1px rgb(200,200,200); background-color:rgb(240,240,240);}
+.edit-unit fieldset {padding:3px 0 0 0 !important /*Non-IE6*/; padding:0 /*IE6*/; margin:0 0 5px 0; border:solid 1px rgb(220,220,220);}
+.edit-unit fieldset legend {margin:0 0 0 5px !important /*Non-IE*/; margin:0 0 10px 5px /*IE6*/; padding:0 2px 0 2px; color:rgb(80,80,80); font-weight:bold; font-size:130%;}
+.edit-unit label.left {float:left; width:150px; margin:0 0 0 10px; padding:2px; font-size:110%;}
+
+.edit-unit select.combo {width:281px; padding:2px; margin: 2px; border:solid 1px rgb(200,200,200); font-family:verdana,arial,sans-serif; font-size:110%;}
+.edit-unit input {font-family:verdana,arial,sans-serif; font-size:110%;}
+.edit-unit input.c_field {width:275px; padding:2px; margin: 2px 2px 2px 2px; border:solid 1px rgb(200,200,200); font-family:verdana,arial,sans-serif; font-size:110%;background-color:#FFFFFF;}
+.edit-unit input.field {width:275px; padding:2px; margin: 2px; border:solid 1px rgb(200,200,200); font-family:verdana,arial,sans-serif; font-size:110%;}
+.edit-unit textarea {width:275px; padding:2px; margin: 2px; border:solid 1px rgb(200,200,200); font-family:verdana,arial,sans-serif; font-size:110%;}
+.edit-unit input.drop {float:right; height: 35px; width:40px; margin-top: 5px; margin-right:170px; padding:1px; color:#000000;}
+.edit-unit input.button {float:left;margin-top:2px; margin-left:20px; margin-bottom: 5px; margin-right:500px; padding:1px; color:#000000;}
+.edit-unit input.left {float:left; margin-left:20px; margin-bottom: 10px; padding:1px; color:#000000;}
+.edit-unit input.leftnext {float:left; margin-left:20px; margin-bottom: 10px; padding:1px; color:#000000;}
+

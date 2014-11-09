@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1251">
+    <title>Internet Gateway. Admin</title>
+    <link rel="stylesheet" type="text/css" media="screen,projection,print" href="../newstyle.css" />
+</head>
+
+<form name="mainform" action="$script" method="post" enctype="multipart/form-data">
+
+  <div class="page-container">
+
+    
+    <!-- Header -->
+    <div class="header">
+        <div class="header-body">
+            <h1>EasyBS</h1>
+        </div>
+    </div>
+
+
+
+    <!-- Body -->
+    <div class="main">
+ 
+      <!-- Navigation -->
+      <div class="main-navigation">
+        <dl class="navigation">
+    		<dt><a href="web_admin_add.py?$session_link" class="first">Поповнення</a></dt>
+    		<dt><a href="web_admin_msg.py?$session_link">Повідомлення</a></dt>
+    		<dt><a href="web_admin_users.py?$session_link">Користувачі</a></dt>
+    		<dt><a href="web_admin_provs.py?$session_link">Провайдери</a></dt>
+    		<dt><a href="web_admin_rates.py?$session_link">Тарифи</a></dt>
+            <dt><a href="web_admin_log.py?$session_link">Log</a></dt>
+        </dl>                        
+      </div>
+ 
+      <!-- Main -->
+      <div class="main-content">
+         
+
+
+
+		<TABLE border=0 align=center width="100%">
+          <TR  align=center bgcolor=#F5D778 style="font-size:14pt;FONT-WE\IGHT: bold;">
+            <td>Дата</td><td>In</td><td>Out</td>
+          </TR>
+          
+            $network_load
+
+          <TR  align=center bgcolor=#F5D778 style="font-size:14pt;FONT-WE\IGHT: bold;">
+            <td>Дата</td><td>In</td><td>Out</td>
+          </TR>
+
+		  
+		</TABLE>
+
+
+      </div>
+    </div>
+    
+    <!-- Footer -->      
+    <div class="footer">
+        <p>EasyBS</p>
+    </div>
+        
+  </div> 
+
+$session
+</form>
+</body>
+</html>

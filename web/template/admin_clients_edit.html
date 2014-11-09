@@ -1,0 +1,50 @@
+
+        <!-- Edit box -->
+        <h1 class="pagetitle">$EDIT_CLIENT</h1>
+        <div class="edit-unit">
+            <input type=hidden value="$client" name=client></p>
+            <fieldset>
+                <legend>&nbsp;$DETAILS_CLIENT&nbsp;</legend>
+                
+                <p><label class="left">$ID:</label>
+                <input type=text disabled value="$client" class="field"></p>
+
+                <p><label class="left">$NAME:</label>
+                <input type=text value="$name" class="field" name=name></p>
+
+                <p><label class="left">$PASSWORD:</label>
+                <input type=password value="" class="field" name=password></p>
+
+                <p><label class="left">$RATE:</label>
+                <select name="rate" size="1" class="combo">
+                    $rate_options
+                </select></p>    
+            </fieldset>
+            <fieldset>
+                <legend>&nbsp;$ADDRESSES&nbsp;</legend>
+                    <p><input class="button" type="submit" value="Add more IP/MAC" name=add_addr></p><br>
+                    $ip_map_pairs_list        
+            </fieldset>
+            <p><input class="left" type="submit" value="Ok" name=ok>
+            <input class="leftnext" type="submit" value="Delete" name=delete></p>
+        </div>
+
+        <h1 class="pagetitle">$CLIENT_CAPTION</h1>
+        <div class="table-unit">
+            <table>
+                <tr>
+                    <th class="first">$ID</th><th>$LOGIN</th><th>$ACCOUNT</th><th>$RATE</th><th>$STATUS</th>
+                </tr>
+                $clients_table
+            </table>
+        </div>
+
+        <h1 class="pagetitle">$ADDRESS_CAPTION</h1>
+        <div class="table-unit">
+            <table>
+                <tr>
+                    <th class="first">$ID</th><th>$NAME</th><th>$IP</th><th>$MAC</th>
+                </tr>
+                $addresses_table
+            </table>
+        </div>
