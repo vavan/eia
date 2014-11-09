@@ -41,7 +41,7 @@ chmod 0600 ${LOGFILE}
 
 
 #Create service
-cp ${INSTDIR}/bin/easy /etc/init.d
-updare-rc.d easy defaults
+cp ./easy /etc/init.d
+update-rc.d easy defaults
 #insserv -r easybs
 #insserv easybs
