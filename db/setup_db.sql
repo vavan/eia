@@ -13,7 +13,7 @@ CREATE TABLE admins (
   name varchar(255) NOT NULL,
   time datetime NOT NULL,
   PRIMARY KEY  (uid)
-) TYPE=MyISAM;
+) ;
 ALTER TABLE admins AUTO_INCREMENT = 50000;
 
 
@@ -29,7 +29,7 @@ CREATE TABLE messages (
   time datetime NOT NULL,
   msg text NOT NULL,
   PRIMARY KEY  (id)
-) TYPE=MyISAM;
+) ;
 
 #
 # Table structure for table 'debits'
@@ -45,7 +45,7 @@ CREATE TABLE debits (
   time datetime NOT NULL,
   rate int unsigned NOT NULL,
   PRIMARY KEY  (id)
-) TYPE=MyISAM;
+) ;
 
 
 #
@@ -60,7 +60,7 @@ CREATE TABLE credits (
   admin_uid int NOT NULL,
   flag int unsigned NOT NULL,
   PRIMARY KEY  (id)
-) TYPE=MyISAM;
+) ;
 
 #  descr text NOT NULL default '',
 
@@ -74,7 +74,7 @@ CREATE TABLE sessions (
   ip varchar(15) NOT NULL,
   uid int unsigned,
   PRIMARY KEY  (sid)
-) TYPE=MyISAM;
+) ;
 
 #
 # Table structure for table 'users'
@@ -94,7 +94,7 @@ CREATE TABLE users (
   rate int unsigned NOT NULL,
   time datetime NOT NULL,
   PRIMARY KEY  (uid)
-) TYPE=MyISAM;
+) ;
 ALTER TABLE users AUTO_INCREMENT = 1;
 
 #
@@ -109,7 +109,7 @@ CREATE TABLE providers (
   descr text NOT NULL,
   rate int unsigned NOT NULL,
   PRIMARY KEY  (pid)
-) TYPE=MyISAM;
+) ;
 ALTER TABLE providers AUTO_INCREMENT = 10000;
 
 CREATE TABLE rates (
@@ -118,7 +118,7 @@ CREATE TABLE rates (
   mode varchar(15) NOT NULL,
   channel int NOT NULL,
   PRIMARY KEY  (id)
-) TYPE=MyISAM;
+) ;
 insert into rates values (1, 1, 'traf_based', 0);
 
 CREATE TABLE addresses (
@@ -127,4 +127,4 @@ CREATE TABLE addresses (
   ip varchar(15) NOT NULL,
   mac varchar(20) NOT NULL,
   PRIMARY KEY  (id)
-) TYPE=MyISAM;
+) ;
