@@ -18,8 +18,9 @@ else
 mkdir ${INSTDIR};
 fi
 
-cp -R * ${INSTDIR}/
-rm ${INSTDIR}/install
+cp -R ./bin ${INSTDIR}/
+cp -R ./cfg ${INSTDIR}/
+cp -R ./web ${INSTDIR}/
 chown -R easy:easy ${INSTDIR}/
 chmod 0755 ${INSTDIR}
 chmod -R 0500 ${INSTDIR}/*

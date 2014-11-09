@@ -4,7 +4,7 @@
 
 import logging, os
 
-sql_credentials = { "host": "127.0.0.1", "user": "easy", "pwd": "j,kjuf", "database": "easy" }
+sql_credentials = { "host": "127.0.0.1", "user": "easy", "pwd": "zhopa", "database": "easy" }
 
 lan = 'eth3'
 
