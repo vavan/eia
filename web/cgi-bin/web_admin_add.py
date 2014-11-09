@@ -44,7 +44,11 @@ class AdminAdd(BaseAdminForm):
         clients.sort(key = lambda x : int(x.id))
         
         self.stat = self.db.get_debits(time_range)
-        self.credits = dict( self.db.get_credits(time_range) )
+        credits = self.db.get_credits(time_range)
+        if credits:
+            self.credits = dict( credits )
+        else:
+            self.credits = {}
         self.total = Totals()
         
         self.odd(0)

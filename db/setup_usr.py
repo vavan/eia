@@ -18,3 +18,5 @@ VALUES ('$host', '$database', '$user', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y', 'Y');
 
 data = Template(data).substitute(config.sql_credentials)
 print data    
+
+#TODO flush privileges!!! handle 127001 & localhost
