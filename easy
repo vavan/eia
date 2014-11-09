@@ -2,29 +2,26 @@
 
 
 ### BEGIN INIT INFO
-# Provides:       easybs
+# Provides:       easy
 # Required-Start: $network $remote_fs
 # Required-Stop:  
 # Default-Start:  2 3 5
 # Default-Stop:
-# Description:    Start the IPCAD database server
+# Description:    Start the EasyInetAccess service server
 ### END INIT INFO
 
-. /etc/rc.status
 
-rc_reset
-
-EASY_PATH=/usr/easybs
-LOGFILE=/var/log/easybs.log
+EASY_PATH=/usr/easy
+LOGFILE=/var/log/easy.log
 
 
 case "$1" in
 
     start)
-        echo -n "Starting EasyBS services"
+        echo -n "Starting EasyInetAccess services"
         echo -n "-- Started: " >> ${LOGFILE}
         date >> ${LOGFILE}
-        ${EASY_PATH}/bin/iproute start
+        #${EASY_PATH}/bin/iproute start
         ${EASY_PATH}/bin/aaa.py
         cd ${EASY_PATH}/web && ./http_serv.py
   
@@ -32,17 +29,17 @@ case "$1" in
         ;;
 
     stop)
-        echo -n "Shutting down EasyBS services"
+        echo -n "Shutting down EasyInetAccess services"
         echo -n "-- Stoped: " >> ${LOGFILE}
         date >> ${LOGFILE}
-        ${EASY_PATH}/bin/iproute stop
+        #${EASY_PATH}/bin/iproute stop
         killall http_serv.py
 
         rc_status -v
         ;;
 
     restart)
-        echo "Restarting service EasyBS "
+        echo "Restarting service EasyInetAccess "
         $0 stop
         $0 start
         

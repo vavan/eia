@@ -1,10 +1,15 @@
 #!/bin/bash
 
-INSTDIR=/usr/easybs
-LOGFILE=/var/log/easybs.log
-#IPCAD_DIR=/var/log/ipcad
+INSTDIR=/usr/local/easy
+LOGFILE=/var/log/easy.log
 
+#TODO 
+# 1. Create user + 
+# 2. Create DB
+# 3. Update Cron  
 
+# Create user easy
+adduser --no-create-home --disabled-login easy
 
 #Create, prepare and copy to install dir
 if [ -e ${INSTDIR} ]; then 
@@ -35,16 +40,8 @@ chown easy:easy ${LOGFILE}
 chmod 0600 ${LOGFILE}
 
 
-#Setup IPCAD
-#if ! [ -e ${IPCAD_DIR} ]; then 
-#mkdir ${IPCAD_DIR}
-#fi
-#if ! [ -e ${IPCAD_DIR}/arc ]; then 
-#mkdir ${IPCAD_DIR}/arc
-#fi
-#cp ./cfg/ipcad.conf /usr/local/etc/
-
 #Create service
-#cp ${INSTDIR}/bin/easybs /etc/init.d
+cp ${INSTDIR}/bin/easy /etc/init.d
+updare-rc.d easy defaults
 #insserv -r easybs
 #insserv easybs
