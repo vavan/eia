@@ -89,18 +89,18 @@ class AdminAdd(BaseAdminForm):
         total = 0
         credits = self.db.get_credits_history(time_range)
         self.odd(0)
-        for credit in credits:
+        if credits: 
+            for credit in credits:
             
-            client = credit[0]
-            money = float(credit[1])
-            when = credit[2]
-            paytype = MoneyAdds.type_name(int(credit[3]), self.text)
-            
-            if money > 0:
-                total += money
-            body += '<tr %s>'%self.odd()
-            body += '<td class="first">%s</td><td>%s</td><td>%.2f</td><td>%s</td></tr>\n'%( when, client, money, paytype )
-            
+                client = credit[0]
+                money = float(credit[1])
+                when = credit[2]
+                paytype = MoneyAdds.type_name(int(credit[3]), self.text)
+                
+                if money > 0:
+                    total += money
+                body += '<tr %s>'%self.odd()
+                body += '<td class="first">%s</td><td>%s</td><td>%.2f</td><td>%s</td></tr>\n'%( when, client, money, paytype )
             
         body += '<tr class="bottom">'
         body += '<td class="first">TOTAL</td><td></td><td>%.2f</td><td></td></tr>\n'%(total)
