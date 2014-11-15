@@ -2,23 +2,21 @@
     Configuration file
 '''
 
-import logging, os
+import logging, os, sys
 
-sql_credentials = { "host": "127.0.0.1", "user": "easy", "pwd": "zhopa", "database": "easy" }
+sql = { "database": "easy.sql" }
 
 lan = 'eth3'
 
 web_user = 'easy'
-web_address = '192.168.0.1'
+web_address = '0.0.0.0'
 web_port = 80
 
-language = 1
-
-period = 19
-
-dhcp_config = '/var/lib/dhcp/etc/dhcp_clients.conf'
+language = 0
 
 log_file = '/var/log/easy.log'
+if os.name == 'nt':
+    log_file = 'C:/Users/vova/Projects/kids/eia/easy.log'
 
 def init_log():
     logging.basicConfig(level=logging.DEBUG,
@@ -28,11 +26,5 @@ def init_log():
                         )
 
 
-if os.name == 'nt':
-    #for emulation/test only
-    dhcp_config = 'dhcp_clients.conf'
-    log_file = 'c:/easybs.log'
-    web_address = ''
-    language = 0
 
 

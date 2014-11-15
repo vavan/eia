@@ -8,29 +8,28 @@ import datetime
 sys.path.append(os.path.join(os.path.dirname(sys.argv[0]), '../cfg'));import config
 from sql_db import DataBase
 from point import PointBuilder, ClientPoint, ProviderPoint, PointList
-from dhcp import Dhcp
-    
+
 
 class AAA:
     MEG = 1000.0*1000.0
-    
+
     def __init__(self, rate_mode):
         logging.info( "Start AAA %s"%rate_mode)
         self.rate_mode = rate_mode
-        self.db = DataBase(config.sql_credentials)
-    
+        self.db = DataBase(config.sql)
+
     def get_clients(self):
         clients = self.db.get_clients()
         addresses = self.db.get_addresses()
         address_map = defaultdict(list)
         for i in addresses:
             address_map[i.uid].append(i)
-        
+
         for c in clients:
             if c.id in address_map:
                 c.addresses = address_map[c.id]
         return clients
-    
+
     def get_providers(self):
         return self.db.get_providers()
 
@@ -54,7 +53,7 @@ class AAA:
                     client_point.set_channel(c.rate.channel)
                     allowed_points.append( client_point )
         return allowed_points
-    
+
     def auth(self, allowed_points, existed_points):
         for allowed in allowed_points:
             if allowed in existed_points:
@@ -78,7 +77,7 @@ class AAA:
                 self.db.update_debits(client.id, mbytes, debit, client.rate.id, time)
                 self.db.update_client_account(client.id, mbytes, debit)
                 logging.debug( "Acct client: %s %s %s"%(client.id, mbytes, debit))
-            
+
     def acct_provider(self, provider, time, bytes):
         mbytes = bytes / self.MEG
         debit = provider.rate.apply(mbytes, self.rate_mode)
@@ -100,27 +99,14 @@ class AAA:
                 self.acct_provider(p, time, existed_map[p.iface].bytes)
 
 
-    def dhcp(self, clients):
-        allowed_pairs = []
-        for c in clients:
-            for a in c.addresses:
-                allowed_pairs.append( (a.mac, a.ip) )
-        dhcp = Dhcp(config.dhcp_config)
-        existed_pairs = dhcp.parse()
-        if existed_pairs != allowed_pairs:
-            dhcp.serialize(allowed_pairs)
-            dhcp.restart()
-            return True
-
     def main(self):
         existed_points = PointBuilder().build()
         providers = self.get_providers()
         clients = self.get_clients()
         allowed_points = self.get_allowed(clients, providers)
-        
+
         self.acct(existed_points, clients, providers)
         self.auth(allowed_points, existed_points)
-        self.dhcp(clients)
 
 
 
@@ -130,7 +116,7 @@ def log_except(exc):
     logging.error(stream.getvalue())
 
 if __name__ == '__main__':
-    config.init_log()       
+    config.init_log()
     try:
         if len(sys.argv) > 1:
             rate_mode = sys.argv[1]

@@ -44,7 +44,7 @@ class Session:
 				sid = self.generate_sid()
 				db.insert_session(sid, ip, uid)
 			else:
-				logging.error( "Can not autorize %s: '%s'-'%s' from %s"%(user_type, login, passwd, ip))
+				logging.error( "Can not authorize %s: '%s'-'%s' from %s"%(user_type, login, passwd, ip))
 		else:
 			sid = self.get_form_sid(form)
 			uid = db.get_session(sid, ip, self.timeout)

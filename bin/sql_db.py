@@ -2,174 +2,57 @@ import logging, sys
 from datetime import datetime
 from hashlib import md5
 from main import Client, Provider, Address, Rate, TrafLimit
-
-try:
-    import _mysql
-except ImportError, e:
-    #logging.error( 'Can not import mysql:%s\n'%str(e) )
-    from pysqlite2 import dbapi2 as sqlite3
-
-
-def MD5_sql(t):
-    return md5(t).hexdigest()
-def NOW_sql():
-    return datetime.now().strftime('%Y-%m-%d %H-%M-%S')
-def UNIX_TIMESTAMP_sql(t):
-    return t
-
-class SqlTest:
-    
-    def __init__(self, dbase):
-        if dbase == None:
-            dbase = ':memory:'
-        self.con = sqlite3.connect(dbase)
-        self.con.create_function("MD5", 1, MD5_sql)
-        self.con.create_function("NOW", 0, NOW_sql)
-        self.con.create_function("UNIX_TIMESTAMP", 1, UNIX_TIMESTAMP_sql)
-
-    
-
-    def select(self, query):
-        logging.info( 'SQL: '+query )
-        c = self.con.cursor()
-        c.execute(query)
-        result = c.fetchall()
-        c.close()
-        return result
-    
-    def update(self, query):
-        logging.info( 'SQL: '+query )
-        c = self.con.cursor()
-        c.execute(query)
-        self.con.commit()
-        c.close()
-
-    def insert_id(self):
-        c = self.con.cursor()
-        i = self.select('SELECT last_insert_rowid()')[0][0]
-        return i
-    
-    def load(self, filename):
-        script = file(filename).read()
-        self.con.executescript(script)
-        self.con.commit()
-
-
-
-
-
-
-
-class Sql:
-    
-    def __init__(self, credentials):
-        host = credentials['host']
-        user = credentials['user']
-        pwd = credentials['pwd']
-        database = credentials['database']
-        try:
-            db = _mysql.connect(host, user, pwd, database)
-        except Exception, e:
-            logging.error( str(e)+'\n' )
-            sys.exit(1)
-        self.db = db
-        self.modify = True
-        self.update('set names "latin1"')
-
-    def select(self, query):
-        r = None
-        try:
-            self.db.query(query)
-            r = self.db.store_result()
-        except Exception, e:
-            logging.error( 'Query: [%s] was failed with error: %s'%(query, str(e)))
-            return None
-
-        if r == None:
-            logging.error( 'Can not make a query: '+query )
-            return None
-
-        rows = []
-        while(1):
-            row = r.fetch_row()
-            if len(row) == 0:
-                break
-            rows.append(row[0])
-        logging.info( 'SQL: '+query )
-        return rows
-    
-    def update(self, query):
-        if self.modify:
-            try:
-                self.db.query(query)
-                logging.info( 'SQL: '+query )
-            except Exception, e:
-                logging.error( 'Query: [%s] was failed with error: %s'%(query, str(e)))
-                return None
-        else:
-            logging.info( 'NOMODIFY SQL: '+query )
-            
-    def insert_id(self):
-        return self.db.insert_id()
-
+from sql_conn import SqlConn
 
 
 class DataBase:
-    
-    def __init__(self, credentials, debug_mode = False, sql = Sql):
-        self.sql = sql(credentials)
-        self.debug = debug_mode
-        
-         
+
+    def __init__(self, credentials):
+        self.sql = SqlConn(credentials)
 
 ### Autorization ###
 
     def authorize_client(self, name, pwd, ip):
-        if self.debug:
-            row = self.sql.select("select uid from users where name='%s' and passwd='%s'"%(name, pwd))
-        else:
-            row = self.sql.select("select uid from users where name='%s' and ip='%s' and passwd='%s'"%(name, ip, pwd))
-        if (len(row) > 0):
-            return row[0][0]
-        else:
-            return None
-        
-    def authorize_admin(self, name, pwd, ip):
-        row = self.sql.select("select uid from admins where name='%s' and MD5('%s') = passwd and ip='%s'"%(name, pwd, ip))
+        row = self.sql.select("select uid from users where name='%s' and passwd='%s'"%(name, pwd))
         if (len(row) > 0):
             return row[0][0]
         else:
             return None
 
-        
+    def authorize_admin(self, name, pwd, ip):
+        row = self.sql.select("select uid from admins where name='%s' and MD5('%s') = passwd"%(name, pwd))
+        if (len(row) > 0):
+            return row[0][0]
+        else:
+            return None
+
+
 
 ### Session ###
-    
+
     def get_session(self, ses_id, ip, timeout):
-        query =  "select uid from sessions where sid='%s' and ip='%s' and "%(ses_id, ip)
-        query += "(UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(time)) < %s"%timeout
+        query =  "select uid from sessions where sid='%s' and ip='%s'"%(ses_id, ip)
         row = self.sql.select(query)
-            
         if len(row) > 0:
             return row[0][0]
         else:
             return None
 
     def update_sesion(self, ses_id):
-        self.sql.update("update sessions set time = NOW() where sid='%s'"%ses_id)
+        self.sql.update("update sessions set time = datetime('now') where sid='%s'"%ses_id)
 
     def insert_session(self, ses_id, ip, uid):
         self.sql.update("delete from sessions where ip='%s' and uid='%s'"%(ip, uid))
-        self.sql.update("insert into sessions values ('%s', NOW(), '%s', %s)"%(ses_id, ip, uid))
-        
+        self.sql.update("insert into sessions values ('%s', datetime('now'), '%s', %s)"%(ses_id, ip, uid))
+
     def expire_session(self, timeout):
-        self.sql.update("delete from sessions where (UNIX_TIMESTAMP(NOW()) - "
-                        "UNIX_TIMESTAMP(time)) > %s"%(timeout))
+        self.sql.update("delete from sessions where (strftime('%%s','now') - "
+                        "strftime('%%s', time)) > %s"%(timeout))
 
 
 
 ### Admin ###
-    
+
     def get_admin(self, uid):
         return self.sql.select("select name, ip from admins where uid = '%s'"%(uid))[0]
 
@@ -191,7 +74,7 @@ class DataBase:
         self.sql.update("insert into users (name, passwd, account, acctlimit, traf, traflimit, rate) "
             "values ('', '', 0, 0, 0, 0, %s)"%Rate.ALLWAYS_EXIST)
         return self.sql.insert_id()
-    
+
     def delete_client(self, uid):
         self.sql.update("delete from users where uid = '%s'"%uid)
         return self.sql.insert_id()
@@ -210,7 +93,7 @@ class DataBase:
                             traf = TrafLimit(traf = float(c[8]), limit = float(c[9])) )
             clients.append( client )
         return clients
-   
+
     def get_client(self, uid):
         c = self.sql.select("select uid, name, account, acctlimit,"
                             "rate, rates.price, mode, channel, traf, traflimit "
@@ -229,7 +112,7 @@ class DataBase:
 
     def set_traflimit(self, uid, traflimit):
         self.sql.update("update users set traflimit = %d, traf = 0 where uid=%s"%(traflimit, uid))
-   
+
     def update_client_account(self, uid, mbytes, debit):
         self.sql.update("update users set traf = traf + %f, account = account - %f "
                 "where uid = %s"%(mbytes, debit, uid))
@@ -237,14 +120,14 @@ class DataBase:
     def add_money(self, uid, money, acctlimit):
         self.sql.update( "update users set account = account + %f, acctlimit = acctlimit + %f "
                 "where uid = %s"%(money, acctlimit, uid) )
-        
-        
+
+
     def modify_client(self, uid, name, passwd, rate):
         if passwd != '':
             passwd = ", passwd = '%s'"%passwd
         self.sql.update("update users set name = '%s', rate = '%s'%s where uid = '%s'"%(name, rate, passwd, uid))
-        
-        
+
+
     def get_peers_by_rate(self, rate_id):
         clients = self.sql.select("select name from users where rate = '%s'"%rate_id)
         providers = self.sql.select("select name from providers where rate = '%s'"%rate_id)
@@ -255,8 +138,8 @@ class DataBase:
 
     def get_client_time(self, uid):
         return self.sql.select("select time from users where uid = '%s'"%(uid))[0][0]
-		
-    
+
+
 
 ### Addresses ###
 
@@ -303,36 +186,36 @@ class DataBase:
                                         "from providers, rates where rate = rates.id")
         providers = []
         for c in raw_providers:
-            provider = Provider( id = c[0], name = c[1], ip = c[2], iface = c[3],  
+            provider = Provider( id = c[0], name = c[1], ip = c[2], iface = c[3],
                                   rate = Rate(id = c[4], price = float(c[5]),
                                         mode = c[6], channel = c[7]) )
             providers.append( provider )
         return providers
-        
+
     def get_provider(self, pid):
         c = self.sql.select("select pid, name, ip, iface, rate, rates.price, "
                             "mode, channel "
                             "from providers, rates where rate = rates.id and pid = %s"%pid)
         if len(c) == 1:
             c = c[0]
-            provider = Provider( id = c[0], name = c[1], ip = c[2], iface = c[3],  
+            provider = Provider( id = c[0], name = c[1], ip = c[2], iface = c[3],
                               rate = Rate(id = c[4], price = float(c[5]),
                               mode = c[6], channel = c[7]) )
             return provider
-    
+
     def add_provider(self):
         self.sql.update("insert into providers (name, ip, iface, rate) values ('', '', '', 1)")
-        return self.sql.insert_id() 
+        return self.sql.insert_id()
 
     def modify_provider(self, uid, name, ip, iface, rate):
         self.sql.update("update providers set name = '%s', ip = '%s', iface = '%s', rate = '%s' where pid = %s" \
                         %(name, ip, iface, rate, uid))
-                        
+
     def del_provider(self, pid):
         self.sql.update("delete from providers where pid = %s"%pid)
 
 
-    
+
 ### Rates ###
 
     def get_rates(self):
@@ -346,7 +229,7 @@ class DataBase:
 
     def set_provider_rate(self, uid, rate_id):
         self.sql.update("update users set rate = %s where uid = %d"%(rate_id, uid))
-    
+
     def add_rate(self, price, mode, channel):
         self.sql.update("insert into rates (price, mode, channel) values(%s, '%s', %s)"%(price, mode, channel))
 
@@ -390,7 +273,7 @@ class DataBase:
         for traf, debit, time in output:
             traf_debit_time.append( (float(traf), float(debit), time ))
         return traf_debit_time
- 
+
 
     def get_debits(self, from_to):
         query =  "select sum(mbytes), sum(debit), uid from debits where time > '%s' and time < '%s'"%from_to
@@ -406,7 +289,7 @@ class DataBase:
         if is_outgoing:
             direction = "uid > 100"
         else:
-            direction = "uid < 100"   
+            direction = "uid < 100"
         query =  "select time, sum(mbytes) from debits where %s"%direction
         query += " and time > '%s' and time < '%s' group by time order by time"%from_to
         time_n_mbytes = self.sql.select(query)
@@ -417,30 +300,30 @@ class DataBase:
 ### Credits ###
 
     def update_credits(self, uid, money, paytype, admin_uid):
-        self.sql.update( "insert into credits (uid, maney, flag, admin_uid, time)"
+        self.sql.update( "insert into credits (uid, money, flag, admin_uid, time)"
             " values (%s, %f, %s, %s, NOW())"%(uid, money, paytype, admin_uid) )
 
     def get_credits(self, from_to):
-        return self.sql.select( "select uid, sum(maney) from credits where"
+        return self.sql.select( "select uid, sum(money) from credits where"
                                 " time > '%s' and time < '%s'"
                                 " group by uid"%from_to )
 
     def get_credits_history(self, from_to):
-        return self.sql.select( "select name, maney, credits.time, flag from credits, users where"
+        return self.sql.select( "select name, money, credits.time, flag from credits, users where"
                                 " credits.time > '%s' and credits.time < '%s' and"
                                 " credits.uid = users.uid order by credits.time desc"%from_to )
 
     def get_client_credits_history(self, uid):
-        return self.sql.select( "select maney, time, flag from credits where"
+        return self.sql.select( "select money, time, flag from credits where"
                                 " credits.uid = %s order by time desc"%uid )
 
-    
-    
+
+
 ### Messages ###
 
     def get_all_messages(self):
         return self.sql.select( "select id, time, sender, uid, msg, time from messages order by time desc" )
-    
+
     def get_message_forclient(self, uid):
         return self.sql.select( "select id, time, sender, uid, msg, time from messages where uid = '%s' or uid = '*' or sender = '%s' order by time desc"%(uid, uid) )
 

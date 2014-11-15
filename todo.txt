@@ -1,0 +1,3 @@
+refactor mysql and sqllite connection
+remove myslq specific functions
+fix mysql privileges

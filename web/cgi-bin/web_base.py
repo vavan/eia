@@ -14,20 +14,17 @@ from request import Request, Replace, Time
 
 
 class BaseForm:
-    
+
     def __init__(self):
         config.init_log()
-        if os.name == 'nt':
-            self.db = sql_db.DataBase('../test/test_database.lite', True, sql = sql_db.SqlTest)
-        else:
-            self.db = sql_db.DataBase(config.sql_credentials, True)
+        self.db = sql_db.DataBase(config.sql)
         self.login = ''
         self.__index = 0
-        
+
 
     def is_admin(self):
         return False
-        
+
     def odd(self, index = None):
         if index != None:
             self.__index = index
@@ -38,7 +35,7 @@ class BaseForm:
         else:
             odd_even = 'even'
         return 'class="%s"'%odd_even
-    
+
     def escape(self, value):
         html_escape_table = {
             "&": "&amp;",
@@ -64,7 +61,7 @@ class BaseForm:
         except:
             value = _type(0)
         return value
-        
+
     def validate_ip(self, ip, redirect_to):
         ip_re = re.compile(r'(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$')
         m = ip_re.match(ip)
@@ -86,10 +83,10 @@ class BaseForm:
             msg = '$INCORRECT_MAC: %s'%mac
             self.on_fail(msg, redirect_to)
             sys.exit(0)
-        
 
 
-    def on_fail(self, msg, redirect_to = None):      
+
+    def on_fail(self, msg, redirect_to = None):
         f = file("template/err.html")
         html = f.read()
         html = html.replace('$error', msg)
@@ -99,34 +96,34 @@ class BaseForm:
         html = Replace(html).run(self.r, self.text)
         print "Content-Type: text/html\n\n"
         print html
-    
+
     def on_success(self):
         html = file(self.get_base_template()).read()
-        
+
         self.before_process()
         self.r.derived = self.process()
-        
+
         html = Replace(html).run(self.r, self.text)
         print "Content-Type: text/html\n\n"
         print html
-        
-    def run(self): 
+
+    def run(self):
         ip = os.environ["REMOTE_ADDR"]
         self.form = cgi.FieldStorage()
         self.f = self.form
-        
+
         sessionMan = Session(is_admin = self.is_admin())
         uid, sessionid = sessionMan.validate(self.db, self.form, ip)
         self.r = Request(sessionid)
         self.text = TextProcessor().get_language(config.language)
-        
+
         if uid != None:
             self.login = uid
             self.on_success()
         else:
             self.on_fail("Access denied!")
             sys.exit(0)
-            
+
 class BaseClientForm(BaseForm):
     def is_admin(self):
         return False
@@ -166,12 +163,12 @@ class BaseAdminForm(BaseForm):
             t = Time()
             if t.create(time) > t.create(last_visited):
                 self.r.msg_unread = '<img src="/unread.png">'
-            
+
 
 
 
 class Calendar:
-    
+
     def __init__(self, form):
         if "year" in form and "month" in form and "month_count" in form:
             self.year = int(form.getvalue("year"))
@@ -180,7 +177,7 @@ class Calendar:
         else:
             self.year = datetime.datetime.today().year
             self.month = datetime.datetime.today().month
-            self.count = 1        
+            self.count = 1
 
     def ___show_years(self, year):
         out = ''
@@ -193,7 +190,7 @@ class Calendar:
                 selected = ''
             out += '<option value="%d" %s>%s</option>'%(name, selected, name)
         return out
-    
+
     def ___show_months(self, month):
         out = ''
         month_list = 'Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec'.split()
@@ -215,10 +212,9 @@ class Calendar:
         out += '<input name=month_count value="%s" size=1 style="font-size:12pt">'%self.count
         out += '<input type="submit" name=month_update value="OK" style="font-size:12pt">'
         return out
-    
+
     def get_time_range(self):
         return Time().str_month_range(year = self.year, month = self.month, count = self.count)
 
 if __name__ == '__main__':
     print BaseForm().escape('22')
-    
