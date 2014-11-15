@@ -28,6 +28,9 @@ class SqlConn:
 
     def __find(self, database):
         pwd = os.path.dirname(sys.argv[0])
+        db_path = pwd + '/' + database
+        if os.path.exists(db_path):
+            return db_path
         db_path = pwd + '/../db/' + database
         if os.path.exists(db_path):
             return db_path
@@ -63,8 +66,4 @@ class SqlConn:
         i = self.select('SELECT last_insert_rowid()')[0][0]
         return i
 
-    def load(self, filename):
-        script = file(filename).read()
-        self.con.executescript(script)
-        self.con.commit()
 

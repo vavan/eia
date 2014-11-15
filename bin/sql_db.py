@@ -81,31 +81,29 @@ class DataBase:
 
     def get_clients(self):
         raw_clients = self.sql.select("select uid, name, account, acctlimit,"
-                                      "rate, rates.price, mode, channel, traf, traflimit "
+                                      "rate, rates.price, mode, traf, traflimit "
                                       "from users, rates "
                                       "where rate = rates.id")
         clients = []
         for c in raw_clients:
             client = Client( id = c[0], name = c[1],
                             account = float(c[2]), acctlimit = float(c[3]),
-                            rate = Rate(id = c[4], price = float(c[5]),
-                                    mode = c[6], channel = c[7]),
-                            traf = TrafLimit(traf = float(c[8]), limit = float(c[9])) )
+                            rate = Rate(id = c[4], price = float(c[5]), mode = c[6]), 
+                            traf = TrafLimit(traf = float(c[7]), limit = float(c[8])) )
             clients.append( client )
         return clients
 
     def get_client(self, uid):
         c = self.sql.select("select uid, name, account, acctlimit,"
-                            "rate, rates.price, mode, channel, traf, traflimit "
+                            "rate, rates.price, mode, traf, traflimit "
                             "from users, rates "
                             "where rate = rates.id and uid='%s'"%uid)
         if len(c) == 1:
             c = c[0]
             return Client( id = c[0], name = c[1],
                            account = float(c[2]), acctlimit = float(c[3]),
-                            rate = Rate(id = c[4], price = float(c[5]),
-                                    mode = c[6], channel = c[7]),
-                            traf = TrafLimit(traf = float(c[8]), limit = float(c[9])) )
+                            rate = Rate(id = c[4], price = float(c[5]), mode = c[6]), 
+                            traf = TrafLimit(traf = float(c[7]), limit = float(c[8])) )
         else:
             logging.error('Unknown or duplicate client id: %s'%uid)
             return None
@@ -181,26 +179,22 @@ class DataBase:
 ### Providers ###
 
     def get_providers(self):
-        raw_providers = self.sql.select("select pid, name, ip, iface, rate, rates.price, "
-                                        "mode, channel "
+        raw_providers = self.sql.select("select pid, name, ip, iface, rate, rates.price, mode "
                                         "from providers, rates where rate = rates.id")
         providers = []
         for c in raw_providers:
             provider = Provider( id = c[0], name = c[1], ip = c[2], iface = c[3],
-                                  rate = Rate(id = c[4], price = float(c[5]),
-                                        mode = c[6], channel = c[7]) )
+                                  rate = Rate(id = c[4], price = float(c[5]), mode = c[6]) )
             providers.append( provider )
         return providers
 
     def get_provider(self, pid):
-        c = self.sql.select("select pid, name, ip, iface, rate, rates.price, "
-                            "mode, channel "
+        c = self.sql.select("select pid, name, ip, iface, rate, rates.price, mode "
                             "from providers, rates where rate = rates.id and pid = %s"%pid)
         if len(c) == 1:
             c = c[0]
             provider = Provider( id = c[0], name = c[1], ip = c[2], iface = c[3],
-                              rate = Rate(id = c[4], price = float(c[5]),
-                              mode = c[6], channel = c[7]) )
+                              rate = Rate(id = c[4], price = float(c[5]), mode = c[6]) )
             return provider
 
     def add_provider(self):
@@ -220,8 +214,8 @@ class DataBase:
 
     def get_rates(self):
         rates = []
-        for i in self.sql.select("select id, price, mode, channel from rates") :
-            rates.append( Rate(id = i[0], price = i[1], mode = i[2], channel = i[3]) )
+        for i in self.sql.select("select id, price, mode from rates") :
+            rates.append( Rate(id = i[0], price = i[1], mode = i[2]) )
         return rates
 
     def set_client_rate(self, uid, rate_id):
@@ -230,8 +224,8 @@ class DataBase:
     def set_provider_rate(self, uid, rate_id):
         self.sql.update("update users set rate = %s where uid = %d"%(rate_id, uid))
 
-    def add_rate(self, price, mode, channel):
-        self.sql.update("insert into rates (price, mode, channel) values(%s, '%s', %s)"%(price, mode, channel))
+    def add_rate(self, price, mode):
+        self.sql.update("insert into rates (price, mode) values(%s, '%s')"%(price, mode))
 
     def delete_rate(self, record_id):
         self.sql.update("delete from rates where id = %s"%record_id)

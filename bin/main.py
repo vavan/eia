@@ -16,6 +16,7 @@ VERSION = '0.9.1'
         0.9.2 - dhcp restart
         0.9.3 - iproute refactoring
         0.9.4 - cli manager restore
+        0.10.0 - reborn
 '''
 
 import logging
@@ -55,16 +56,16 @@ class Rate:
     TRAFBASED = 'traf_based'
     DAILY = 'daily'
     MONTHLY = 'monthly'
+    MINUTELY = 'minutely'
     
     ALLWAYS_EXIST = 1
 
-    def __init__(self, id, price, mode, channel = 0):
+    def __init__(self, id, price, mode):
         if mode == None:
             mode = self.TRAFBASED
         self.id = id
         self.mode = mode
         self.price = price
-        self.channel = int(channel)
         self.is_updated = False
         
     def apply(self, mbytes, mode):
@@ -79,13 +80,15 @@ class Rate:
         return 0
             
     def get_full_name(self, text):
-        return '#%02d (%d) %s'%(int(self.id), self.channel, self.get_name(text))
+        return '#%02d %s'%(int(self.id), self.get_name(text))
 
     def get_name(self, text):
         if self.mode == self.TRAFBASED:
             name = text.RATE_TRAFBASED
         elif self.mode == self.DAILY:
             name = text.RATE_DAYLY
+        elif self.mode == self.MINUTELY:
+            name = text.RATE_MINUTELY
         else:
             name = text.RATE_MONTHLY
         return '%s %s'%(self.price, name)

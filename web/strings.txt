@@ -1,3 +1,4 @@
+RATE_MINUTELY;$/min;грн/хв;
 RATE_TRAFBASED;$/MB;грн/ћЅ;
 RATE_DAYLY;$/day;грн/день;
 RATE_MONTHLY;$/month;грн/м≥с€ць;

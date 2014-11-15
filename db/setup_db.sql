@@ -7,7 +7,7 @@
 --
 
 CREATE TABLE admins (
-  uid int unsigned NOT NULL,
+  uid INTEGER,
   passwd varchar(40) NOT NULL,
   ip varchar(15) NOT NULL,
   name varchar(255) NOT NULL,
@@ -24,7 +24,7 @@ INSERT INTO admins VALUES (1, MD5('admin'), '0.0.0.0', 'admin', '2014');
 --
 
 CREATE TABLE messages (
-  id int unsigned NOT NULL,
+  id INTEGER,
   uid char(9) NOT NULL,
   sender char(9) NOT NULL,
   time datetime NOT NULL,
@@ -39,7 +39,7 @@ CREATE TABLE messages (
 --pid is deprecated
 
 CREATE TABLE debits (
-  id int unsigned NOT NULL,
+  id INTEGER,
   uid int unsigned NOT NULL,
   mbytes float NOT NULL,
   debit float NOT NULL,
@@ -54,7 +54,7 @@ CREATE TABLE debits (
 -- money should be signed!
 
 CREATE TABLE credits (
-  id int unsigned NOT NULL,
+  id INTEGER,
   uid int unsigned NOT NULL,
   money int NOT NULL,
   time datetime NOT NULL,
@@ -84,7 +84,7 @@ CREATE TABLE sessions (
 --price, daily are deprecated
 
 CREATE TABLE users (
-  uid int unsigned NOT NULL,
+  uid INTEGER,
   name varchar(255) NOT NULL,
   passwd varchar(15) NOT NULL,
   account float NOT NULL,
@@ -103,7 +103,7 @@ CREATE TABLE users (
 --price, monthly are deprecated
 
 CREATE TABLE providers (
-  pid int unsigned NOT NULL,
+  pid INTEGER,
   name varchar(255) NOT NULL,
   ip varchar(15) NOT NULL,
   iface varchar(15) NOT NULL,
@@ -114,16 +114,15 @@ CREATE TABLE providers (
 -- ALTER TABLE providers AUTO_INCREMENT = 10000;
 
 CREATE TABLE rates (
-  id int unsigned NOT NULL,
+  id INTEGER,
   price float NOT NULL,
   mode varchar(15) NOT NULL,
-  channel int NOT NULL,
   PRIMARY KEY  (id)
 ) ;
-insert into rates values (1, 1, 'traf_based', 0);
+insert into rates values (1, 1, 'traf_based');
 
 CREATE TABLE addresses (
-  id int NOT NULL,
+  id INTEGER,
   uid int NOT NULL,
   ip varchar(15) NOT NULL,
   mac varchar(20) NOT NULL,

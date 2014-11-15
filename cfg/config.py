@@ -4,7 +4,7 @@
 
 import logging, os, sys
 
-sql = { "database": "easy.sql" }
+sql = { "database": "easy.db" }
 
 lan = 'eth3'
 

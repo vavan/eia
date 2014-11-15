@@ -12,15 +12,16 @@ class AdminRates(BaseAdminForm):
      
     def do_add_rate(self):
         price = self.getvalue('price', float)
-        channel = self.getvalue('channel', int)
         rate_mode = self.getvalue('rate')
         if rate_mode == "model_month":
             mode = Rate.MONTHLY
         elif rate_mode == "model_day":
             mode = Rate.DAILY
+        elif rate_mode == "model_minutes":
+            mode = Rate.MINUTELY
         else:
             mode = Rate.TRAFBASED
-        self.db.add_rate(price, mode, channel)
+        self.db.add_rate(price, mode)
        
     def show(self):
         out = ''
@@ -31,7 +32,6 @@ class AdminRates(BaseAdminForm):
             out += '<td class="first"><a href="web_admin_rates.py?$session_link&delete=%s">Delete</a></td>'%rate.id
             out += '<td>%s</td>'%rate.price
             out += '<td>%s</td>'%rate.get_name(self.text)
-            out += '<td>%s</td>'%rate.channel
             out += '</tr>\n'
         return out
     
