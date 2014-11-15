@@ -11,7 +11,7 @@
 ### END INIT INFO
 
 
-EASY_PATH=/usr/easy
+EASY_PATH=/usr/local/easy
 LOGFILE=/var/log/easy.log
 
 
@@ -24,8 +24,7 @@ case "$1" in
         #${EASY_PATH}/bin/iproute start
         ${EASY_PATH}/bin/aaa.py
         cd ${EASY_PATH}/web && ./http_serv.py
-  
-        rc_status -v
+
         ;;
 
     stop)
@@ -35,18 +34,17 @@ case "$1" in
         #${EASY_PATH}/bin/iproute stop
         killall http_serv.py
 
-        rc_status -v
         ;;
 
     restart)
         echo "Restarting service EasyInetAccess "
         $0 stop
         $0 start
-        
+
         rc_status
-        ;;  
-    
+        ;;
+
+
 esac
-rc_exit
 
 

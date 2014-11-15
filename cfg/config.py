@@ -22,8 +22,7 @@ def init_log():
     logging.basicConfig(level=logging.DEBUG,
                         format='%(asctime)s %(levelname)s %(message)s',
                         filename=log_file,
-                        filemode='a'
-                        )
+                        filemode='a')
 
 
 
