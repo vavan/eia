@@ -60,7 +60,6 @@ class AdminAdd(BaseAdminForm):
             
             traf, money = self.prepare_client(c)
             account = c.account - c.acctlimit
-            body += '<td>%.2f</td><td>%.2f</td>'%(traf, money)
             
             if str(selected) == str(c.id):
                 mark = ' class="selected"'
@@ -68,20 +67,14 @@ class AdminAdd(BaseAdminForm):
                 mark = ''
                 
             body += "<td%s>%.2f</td>"%(mark, account)
-            body += '<td>%.2f</td>'%(abs(c.acctlimit))
             
-            body += "<td align=right>"
-            body += '<input name=moneyadd_%s value="" size=4>'%c.id
-            body += '<input type="submit" name=add_%s value="+">'%c.id
+            body += "<td>"
+            body += '<input class="btn" type="submit" name=add1_%s value="&nbsp+1&nbsp">'%c.id
+            body += '<input class="btn" type="submit" name=add5_%s value="&nbsp+5&nbsp">'%c.id
+            body += '&nbsp&nbsp<input name=moneyadd_%s value="" size=2>'%c.id
+            body += '<input class="btn" type="submit" name=add_%s value="&nbsp+&nbsp">'%c.id
             body += "</td></tr>\n"
             
-        body += '<tr class="bottom">'
-        body += '<td class="first">TOTAL</td>'
-        body += '<td>%.2f</td>'%self.total.traf
-        body += '<td>%.2f</td>'%self.total.money
-        body += '<td>%.2f</td>'%self.total.balance
-        body += '<td>%.2f</td>'%self.total.debt
-        body += '<td>&nbsp;</td></tr>\n'
         return body
    
     def show_credits(self, time_range):
@@ -112,24 +105,7 @@ class AdminAdd(BaseAdminForm):
         for i in providers:
             provs.append(i.id)
         return provs        
-        
-    def show_summary_table(self, time_range, income):
-        out = ''
-        sum_mbytes = 0
-        sum_money = 0
-        providers = self.db.get_providers()
-        self.odd(0)
-        for p in providers:
-            mbytes, money = self.db.get_debit( p.id, time_range )
-            sum_mbytes += mbytes
-            sum_money += money
-            out += '<tr %s>'%self.odd()
-            out += '<td class="first">%s</td><td>%.2f</td><td>%.2f</td><td>-</td></tr>\n'%( p.name, mbytes, money )
-        
-        sum_profit = income - sum_money
-        out += '<tr class="bottom">'
-        out += '<td class="first">TOTAL</td><td>%.2f</td><td>%.2f</td><td>%.2f</td></tr>\n'%(sum_mbytes, sum_money, sum_profit)
-        return out        
+               
     
     def show(self, selected):
         c = Calendar(self.f)
@@ -137,8 +113,7 @@ class AdminAdd(BaseAdminForm):
 
         self.r.select_month = c.select_month()
         self.r.adds_list = self.show_adds_list(time_range, selected)
-        self.r.credit_history, income = self.show_credits(time_range)
-        self.r.summary_table = self.show_summary_table(time_range, income)
+        #self.r.credit_history, income = self.show_credits(time_range)
               
         f = file("template/admin_add.html")
         html = f.read()
@@ -153,6 +128,12 @@ class AdminAdd(BaseAdminForm):
                 if self.f.has_key('moneyadd_'+uid):
                     adds = self.f.getvalue('moneyadd_'+uid)
                     adds = MoneyAdds(adds)
+            elif i.startswith('add1_'):
+                uid = i[5:]
+                adds = MoneyAdds('1')
+            elif i.startswith('add5_'):
+                uid = i[5:]
+                adds = MoneyAdds('5')
         return uid, adds
     
     def process(self):

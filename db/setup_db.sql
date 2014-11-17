@@ -91,9 +91,9 @@ CREATE TABLE users (
   acctlimit float NOT NULL,
   traf float NOT NULL,
   traflimit float NOT NULL,
-  descr text NOT NULL,
+  descr text,
   rate int unsigned NOT NULL,
-  time datetime NOT NULL,
+  time datetime,
   PRIMARY KEY  (uid)
 ) ;
 -- ALTER TABLE users AUTO_INCREMENT = 1;
@@ -107,7 +107,7 @@ CREATE TABLE providers (
   name varchar(255) NOT NULL,
   ip varchar(15) NOT NULL,
   iface varchar(15) NOT NULL,
-  descr text NOT NULL,
+  descr text,
   rate int unsigned NOT NULL,
   PRIMARY KEY  (pid)
 ) ;
