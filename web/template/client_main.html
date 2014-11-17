@@ -1,24 +1,43 @@
 
-        <!-- Show box -->
-        <h1 class="pagetitle">$CLIENT_PAGE</h1>
+        <!-- Show box 
+        <h1 class="pagetitle">$CLIENT_PAGE</h1> -->
         <div class="edit-unit">
-            <fieldset>
+            
+            
+            <fieldset >
                 <legend>&nbsp;$DETAILS_CLIENT&nbsp;</legend>
-                
-                <p><label class="left">$CLIENT_ACCOUNT:</label>
-                <input type=text readonly value="$account" class="c_field"></p>
 
-                <p><label class="left">$CLIENT_DEBT:</label>
-                <input type=text readonly value="$debt" class="c_field"></p>
+    <div class="register-switch">
+      <input type="radio" name="user" value="F" id="w1" class="register-switch-input" checked>
+      <label style="width:33%;" for="w1" class="register-switch-label">Female</label>
+      <input type="radio" name="user" value="M" id="w2" class="register-switch-input">
+      <label style="width:33%;" for="w2" class="register-switch-label">Male</label>
+      <input type="radio" name="user" value="Z" id="w3" class="register-switch-input">
+      <label  style="width:33%;" for="w3" class="register-switch-label">Zuz</label>
+    </div>
 
-                <p><label class="left">$CLIENT_IP:</label>
-                <input type=text readonly value="$ipaddr" class="c_field"></p>
-
-                <p><label class="left">$RATE:</label>
-                <input type=text readonly value="$model" class="c_field"></p>
+    <div class="register-switch">
+      <input type="radio" name="device" value="F" id="a1" class="register-switch-input" checked>
+      <label style="width:33%;" for="a1" class="register-switch-label">Female</label>
+      <input type="radio" name="device" value="M" id="a2" class="register-switch-input">
+      <label style="width:33%;" for="a2" class="register-switch-label">Male</label>
+      <input type="radio" name="device" value="Z" id="a3" class="register-switch-input">
+      <label style="width:33%;" for="a3" class="register-switch-label">Zuz</label>
+    </div>
+    <div class="register-switch">
+      <input type="radio" name="duration" value="F" id="b1" class="register-switch-input" checked>
+      <label style="width:33%;" for="b1" class="register-switch-label">10min</label>
+      <input type="radio" name="duration" value="M" id="b2" class="register-switch-input">
+      <label style="width:33%;" for="b2" class="register-switch-label">20min</label>
+      <input type="radio" name="duration" value="Z" id="b3" class="register-switch-input">
+      <label style="width:33%;" for="b3" class="register-switch-label">30min</label>
+    </div>
+    <input type="password" class="register-input" placeholder="Password">
+    <input type="submit" value="Create Account" class="register-button">
+    
 
             </fieldset>            
-            <fieldset>
+           <!-- <fieldset>
                 <legend>&nbsp;$TRAFLIMIT&nbsp;</legend>
                 
                 <p><label class="left">$DOWNLOAD:</label>
@@ -29,7 +48,8 @@
                 
                 <p><input class="button" type="submit" value="$SET_LIMIT" name=set_traflimit></p><br>
 
-            </fieldset>            
+            </fieldset>    
+-->            
         </div>
         
 
