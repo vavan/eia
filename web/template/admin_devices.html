@@ -1,0 +1,25 @@
+
+        <h1 class="pagetitle">$DEVICE_EDIT</h1>
+        <div class="edit-unit">
+            <fieldset>
+                <legend>&nbsp;$DEVICE_DETAILS&nbsp;</legend>
+                
+                <p><label class="left">$NAME:</label>
+                <input type=text value="" class="field" name="name"></p>
+
+                <p><label class="left">$MAC:</label>
+                <input type=text value="" class="field" name="mac"></p>
+            </fieldset>
+            <p><input class="left" type="submit" value="Add" name=add>
+            </p>          
+        </div>
+
+        <h1 class="pagetitle">$DEVICES_CAPTION</h1>
+        <div class="table-unit">
+            <table>
+        	    <tr>
+                    <th class="first"></th><th>$NAME</th><th>$MAC</th>
+                </tr>
+                    $devices
+    		</table>
+        </div>
