@@ -1,7 +1,7 @@
 import logging, sys
 from datetime import datetime
 from hashlib import md5
-from main import Client, Provider, Address, Rate, TrafLimit
+from main import Client, Provider, Address, Rate, TrafLimit, Device
 from sql_conn import SqlConn
 
 
@@ -88,7 +88,7 @@ class DataBase:
         for c in raw_clients:
             client = Client( id = c[0], name = c[1],
                             account = float(c[2]), acctlimit = float(c[3]),
-                            rate = Rate(id = c[4], price = float(c[5]), mode = c[6]), 
+                            rate = Rate(id = c[4], price = float(c[5]), mode = c[6]),
                             traf = TrafLimit(traf = float(c[7]), limit = float(c[8])) )
             clients.append( client )
         return clients
@@ -102,7 +102,7 @@ class DataBase:
             c = c[0]
             return Client( id = c[0], name = c[1],
                            account = float(c[2]), acctlimit = float(c[3]),
-                            rate = Rate(id = c[4], price = float(c[5]), mode = c[6]), 
+                            rate = Rate(id = c[4], price = float(c[5]), mode = c[6]),
                             traf = TrafLimit(traf = float(c[7]), limit = float(c[8])) )
         else:
             logging.error('Unknown or duplicate client id: %s'%uid)
@@ -138,97 +138,46 @@ class DataBase:
         return self.sql.select("select time from users where uid = '%s'"%(uid))[0][0]
 
 
+### Devices ###
+    def get_devices(self):
+        raw_devices = self.sql.select( "select id, name, mac from devices" )
+        devices = []
+        if raw_devices:
+            for row in raw_devices:
+                devices.append( Device( *row ) )
+        return devices
 
-### Addresses ###
+    def add_device(self, name, mac):
+        self.sql.update("insert into devices (name, mac) values ('%s', '%s')"%(name, mac))
 
-    def get_addresses(self):
-        raw_addresses = self.sql.select( "select addresses.uid, addresses.ip, addresses.mac "
-                                        "from addresses, users where addresses.uid = users.uid" )
-        addresses = []
-        for i in raw_addresses:
-            addresses.append( Address( uid = i[0], ip = i[1], mac = i[2] ) )
-        return addresses
+    def delete_device(self, id):
+        self.sql.update("delete from devices where id='%s'"%(id))
 
-    def get_addresses_web(self):
-        return self.sql.select( "select id, addresses.ip, addresses.mac, addresses.uid, name "
-                                "from addresses, users where addresses.uid = users.uid order by addresses.uid" )
+### Cache ###
+    def get_cache(self):
+        return self.sql.select( "select mac from cache" )
 
-    def delete_address(self, addrid):
-        self.sql.update("delete from addresses where id = '%s'"%(addrid))
-
-    def modify_address(self, addrid, ip = '', mac = ''):
-        if ip != '':
-            ip = "ip = '%s'"%ip
-        if mac != '':
-            mac = "mac = '%s'"%mac
-            if ip != '':
-                mac = ' ,' + mac
-        self.sql.update("update addresses set %s%s where id = '%s'"%(ip, mac, addrid))
-
-    def add_client_addresses(self, uid):
-        self.sql.update("insert into addresses (uid, ip, mac) values (%s, '', '')"%uid)
-
-    def get_client_addresses(self, uid):
-        return self.sql.select("select id, ip, mac from addresses where uid = '%s'"%uid)
-
-    def delete_client_addresses(self, uid):
-        self.sql.update("delete from addresses where uid = '%s'"%(uid))
+    def update_cache(self, mac_list):
+        self.sql.update("delete from cache")
+        for i in mac_list:
+            self.sql.update("insert into cache (mac) values ('%s')"%(i))
 
 
+### Alive ###
+    def get_alive_mac(self):
+        return self.sql.select( "select mac from alive, devices where alive.device = devices.id" )
 
-### Providers ###
+    def check_alive(self, user):
+        self.sql.update("select device, time, duration from alive where user = '%s'"%(user))
 
-    def get_providers(self):
-        raw_providers = self.sql.select("select pid, name, ip, iface, rate, rates.price, mode "
-                                        "from providers, rates where rate = rates.id")
-        providers = []
-        for c in raw_providers:
-            provider = Provider( id = c[0], name = c[1], ip = c[2], iface = c[3],
-                                  rate = Rate(id = c[4], price = float(c[5]), mode = c[6]) )
-            providers.append( provider )
-        return providers
+    def start_alive(self, user, device, duration):
+        self.sql.update("insert into alive (user, device, time, duration) values ('%s', '%s', datetime('now'), '%s')"%(user, device, duration))
 
-    def get_provider(self, pid):
-        c = self.sql.select("select pid, name, ip, iface, rate, rates.price, mode "
-                            "from providers, rates where rate = rates.id and pid = %s"%pid)
-        if len(c) == 1:
-            c = c[0]
-            provider = Provider( id = c[0], name = c[1], ip = c[2], iface = c[3],
-                              rate = Rate(id = c[4], price = float(c[5]), mode = c[6]) )
-            return provider
-
-    def add_provider(self):
-        self.sql.update("insert into providers (name, ip, iface, rate) values ('', '', '', 1)")
-        return self.sql.insert_id()
-
-    def modify_provider(self, uid, name, ip, iface, rate):
-        self.sql.update("update providers set name = '%s', ip = '%s', iface = '%s', rate = '%s' where pid = %s" \
-                        %(name, ip, iface, rate, uid))
-
-    def del_provider(self, pid):
-        self.sql.update("delete from providers where pid = %s"%pid)
+    def expire_alive(self):
+        self.sql.update("delete from alive where (strftime('%%s','now') - "
+                        "strftime('%%s', time)) > duration")
 
 
-
-### Rates ###
-
-    def get_rates(self):
-        rates = []
-        for i in self.sql.select("select id, price, mode from rates") :
-            rates.append( Rate(id = i[0], price = i[1], mode = i[2]) )
-        return rates
-
-    def set_client_rate(self, uid, rate_id):
-        self.sql.update("update users set rate = %s where uid = %d"%(rate_id, uid))
-
-    def set_provider_rate(self, uid, rate_id):
-        self.sql.update("update users set rate = %s where uid = %d"%(rate_id, uid))
-
-    def add_rate(self, price, mode):
-        self.sql.update("insert into rates (price, mode) values(%s, '%s')"%(price, mode))
-
-    def delete_rate(self, record_id):
-        self.sql.update("delete from rates where id = %s"%record_id)
 
 
 
@@ -312,18 +261,4 @@ class DataBase:
                                 " credits.uid = %s order by time desc"%uid )
 
 
-
-### Messages ###
-
-    def get_all_messages(self):
-        return self.sql.select( "select id, time, sender, uid, msg, time from messages order by time desc" )
-
-    def get_message_forclient(self, uid):
-        return self.sql.select( "select id, time, sender, uid, msg, time from messages where uid = '%s' or uid = '*' or sender = '%s' order by time desc"%(uid, uid) )
-
-    def add_message(self, sender, receiver, msg, time):
-        self.sql.update( "insert into messages (sender, uid, time, msg) values ('%s', '%s', '%s', '%s')"%(sender, receiver, time, msg) )
-
-    def delete_message(self, msg_id):
-        self.sql.update( "delete from messages where id = '%s'"%(msg_id) )
 

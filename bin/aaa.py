@@ -4,111 +4,39 @@ import os, sys, re
 from collections import defaultdict
 import traceback, StringIO, logging
 import datetime
+import sets
 
 sys.path.append(os.path.join(os.path.dirname(sys.argv[0]), '../cfg'));import config
 from sql_db import DataBase
-from point import PointBuilder, ClientPoint, ProviderPoint, PointList
-
+from router_hal import RouterHal
 
 class AAA:
     MEG = 1000.0*1000.0
 
-    def __init__(self, rate_mode):
-        logging.info( "Start AAA %s"%rate_mode)
-        self.rate_mode = rate_mode
+    def __init__(self):
+        logging.info( "Start AAA")
         self.db = DataBase(config.sql)
 
-    def get_clients(self):
-        clients = self.db.get_clients()
-        addresses = self.db.get_addresses()
-        address_map = defaultdict(list)
-        for i in addresses:
-            address_map[i.uid].append(i)
-
-        for c in clients:
-            if c.id in address_map:
-                c.addresses = address_map[c.id]
-        return clients
-
-    def get_providers(self):
-        return self.db.get_providers()
-
-    def is_allowed(self, client):
-        if client.account > client.acctlimit:
-            if client.traf.limit != 0:
-                if client.traf.traf < client.traf.limit:
-                    return True
-            else:
-                return True
-
-    def get_allowed(self, clients, providers):
-        allowed_points = PointList()
-        for p in providers:
-            allowed_points.append( ProviderPoint(p.iface) )
-        for c in clients:
-            if self.is_allowed(c):
-                for a in c.addresses:
-                    client_point = ClientPoint(a.ip)
-                    client_point.set_mac(a.mac)
-                    client_point.set_channel(c.rate.channel)
-                    allowed_points.append( client_point )
-        return allowed_points
-
-    def auth(self, allowed_points, existed_points):
-        for allowed in allowed_points:
-            if allowed in existed_points:
-                i = existed_points.index(allowed)
-                if not existed_points[i].equal(allowed):
-                    logging.debug("Apoint: %s; Epoint: %s"%(str(allowed), str(existed_points[i])))
-                    existed_points.erase(allowed)
-                    allowed.add()
-            else:
-                allowed.add()
-        for existed in existed_points:
-            if existed not in allowed_points:
-                existed_points.erase(existed)
-
-
-    def acct_client(self, client, time, bytes):
-        if client.account > client.acctlimit:
-            mbytes = bytes / self.MEG
-            debit = client.rate.apply(mbytes, self.rate_mode)
-            if mbytes != 0 or debit != 0:
-                self.db.update_debits(client.id, mbytes, debit, client.rate.id, time)
-                self.db.update_client_account(client.id, mbytes, debit)
-                logging.debug( "Acct client: %s %s %s"%(client.id, mbytes, debit))
-
-    def acct_provider(self, provider, time, bytes):
-        mbytes = bytes / self.MEG
-        debit = provider.rate.apply(mbytes, self.rate_mode)
-        if mbytes != 0 or debit != 0:
-            self.db.update_debits(provider.id, mbytes, debit, provider.rate.id, time)
-            logging.debug( "Acct provider: %s %s %s"%(provider.id, mbytes, debit))
-
-    def acct(self, existed_points, clients, providers):
-        time = datetime.datetime.now()
-        existed_map = dict(map(lambda x: (x.get_key(x), x), existed_points))
-        for c in clients:
-            for a in c.addresses:
-                if a.ip in existed_map:
-                    self.acct_client(c, time, existed_map[a.ip].bytes)
-                else:
-                    self.acct_client(c, time, 0)
-        for p in providers:
-            if p.iface in existed_map:
-                self.acct_provider(p, time, existed_map[p.iface].bytes)
-
+    def get_planned(self):
+        alive = map(lambda x: x[0], self.db.get_alive_mac())
+        all = map(lambda x: x.mac, self.db.get_devices())
+        alive = set(alive)
+        all = set(all)
+        return all - alive
 
     def main(self):
-        existed_points = PointBuilder().build()
-        providers = self.get_providers()
-        clients = self.get_clients()
-        allowed_points = self.get_allowed(clients, providers)
+        self.db.expire_alive()
+        hal = RouterHal(self.db)
+        actual = set(hal.get())
+        planned = self.get_planned()
 
-        self.acct(existed_points, clients, providers)
-        self.auth(allowed_points, existed_points)
-
-
+        new = planned - actual
+        old = actual - planned
+        for i in new:
+            hal.add(i)
+        for i in old:
+            hal.remove(i)
+        hal.apply()
 
 def log_except(exc):
     stream = StringIO.StringIO()
@@ -118,11 +46,7 @@ def log_except(exc):
 if __name__ == '__main__':
     config.init_log()
     try:
-        if len(sys.argv) > 1:
-            rate_mode = sys.argv[1]
-        else:
-            rate_mode = None
-        AAA(rate_mode).main()
+        AAA().main()
     except Exception, e:
         logging.error( 'Unhandled exception in AAA:' )
         log_except( e )

@@ -29,17 +29,8 @@ class Replace(Template):
 		
 
 class Request:
-
-	def create_session_http(self, sessionid):
-		return '<input type="hidden" name="session" value="%s">'%sessionid
-		
-	def create_session_link(self, sessionid):
-		return 'session=%s'%sessionid       
-
-	def __init__(self, sessionid):
+	def __init__(self):
 		self.script = os.environ['SCRIPT_NAME']
-		self.session = self.create_session_http(sessionid)
-		self.session_link = self.create_session_link(sessionid)
 		self.version = VERSION
 		
 

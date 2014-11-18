@@ -61,7 +61,7 @@
 .edit-unit table td.right {text-align:right; }
 
 .simple-unit {width:97%; margin:2.0em 0 0 0; padding:10px 10px 10px 10px; border:solid 1px rgb(200,200,200); background-color:rgb(240,240,240);}
-.edit-unit { padding:10px 10px 30px 10px; border:solid 1px rgb(200,200,200); background-color:rgb(240,240,240);}
+.edit-unit { padding:10px 10px 30px 10px; border:none; background-color:#E2F4FF;}
 .edit-unit fieldset {padding:3px 0 0 0 !important /*Non-IE6*/; padding:0 /*IE6*/; margin:0 0 5px 0; border:solid 1px rgb(220,220,220);}
 .edit-unit fieldset legend {margin:0 0 0 5px !important /*Non-IE*/; margin:0 0 10px 5px /*IE6*/; padding:0 2px 0 2px; color:rgb(80,80,80); font-weight:bold; font-size:130%;}
 .edit-unit label.left {float:left; width:150px; margin:0 0 0 10px; padding:2px; font-size:110%;}

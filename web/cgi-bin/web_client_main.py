@@ -8,46 +8,49 @@ from web_base import BaseClientForm
 from request import Time
 
 class Form(BaseClientForm):
-           
 
-    def show_client_ips(self, uid):
-        addresses = self.db.get_client_addresses(uid)
-        iplist = map(lambda x: x[1], addresses)
-        out = '; '.join(iplist)
-        return out
+    def add_alive(self):
+        user = self.getvalue('user')
+        device = self.getvalue('device')
+        duration = self.getvalue('duration', int)
+        alive = self.db.check_alive(user)
+        if alive:
+            device, time, duration = alive
+            logging.debug("Alive: %s %s %s"%(device, time, duration))
+        else:
+            self.db.start_alive(user, device, duration*60)
 
+    def show_users(self):
+        body = ''
+        clients = self.db.get_clients()
+        length = len(clients)
+        for c in clients:
+            body += '<input type="radio" name="user" value="%s" id="u%s" class="register-switch-input">'%(c.id, c.name)
+            body += '<label style="width:%0.2d%%;" for="u%s" class="register-switch-label">%s:%d</label>'%(100/length, c.name, c.name, c.account)
+        return body
+        
+    def show_devices(self):
+        body = ''
+        devices = self.db.get_devices()
+        length = len(devices)
+        for d in devices:
+            body += '<input type="radio" name="device" value="%s" id="d%s" class="register-switch-input">'%(d.id, d.name)
+            body += '<label style="width:%0.2d%%;" for="d%s" class="register-switch-label">%s</label>'%(100/length, d.name, d.name)
+        return body
+        
     def show(self):
-        text = self.text
-        r = self.r
-        
-        db = self.db
-        client = db.get_client(self.login)
-        r.ipaddr = self.show_client_ips(self.login)
-        r.traf = "%.2f"%float(client.traf.traf)
-        r.account = "%.2f"%float(client.account - client.acctlimit)
-        r.debt = "%.2f"%float(abs(client.acctlimit))
-              
-        if client.traf.limit == '0':
-            r.traflimit = 'No'
-        else:
-            r.traflimit = client.traf.limit
-        
-        if client.traf.traf > client.traf.limit:
-            r.traf_color = "#FF0000"
-        else:
-            r.traf_color = "#FFFFFF"
-        
-        r.model = client.rate.get_name(self.text)
-      
+        if 'start' in self.f:
+            self.add_alive()
+
+        self.r.users = self.show_users()
+        self.r.devices = self.show_devices()
+             
         f = file("template/client_main.html")
         html = f.read()
         return html
     
 
     def process(self):
-        if self.form.has_key("set_traflimit") and self.form.has_key("traflimit"):
-            traflimit = self.getvalue("traflimit", int)
-            self.db.set_traflimit(self.login, traflimit)
         return self.show()
     
 

@@ -106,3 +106,7 @@ MSG_TO;Reciever;Одержувач;
 MSG_FROM;Sender;Відправляч;
 MSG_ALL;Everybody;Для всіх;
 MSG_ADMIN;Admin only;Адміністратор;
+DEVICE_LINK;Devices;Пристрої;
+DEVICES_CAPTION;Devices;Пристрої;
+DEVICE_EDIT;Edit Device;a;
+DEVICE_DETAILS;Device Details;a;

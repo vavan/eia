@@ -51,6 +51,12 @@ class Address:
         self.ip = ip
         self.mac = mac
 
+class Device:
+    def __init__(self, id, name, mac):
+        self.id = id
+        self.name = name
+        self.mac = mac
+
 class Rate:
 
     TRAFBASED = 'traf_based'

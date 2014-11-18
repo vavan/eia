@@ -108,61 +108,42 @@ class BaseForm:
         print html
 
     def run(self):
-        ip = os.environ["REMOTE_ADDR"]
         self.form = cgi.FieldStorage()
         self.f = self.form
-
-        sessionMan = Session(is_admin = self.is_admin())
-        uid, sessionid = sessionMan.validate(self.db, self.form, ip)
-        self.r = Request(sessionid)
+        self.r = Request()
         self.text = TextProcessor().get_language(config.language)
 
-        if uid != None:
-            self.login = uid
+        if self.authorize() != None:
             self.on_success()
         else:
             self.on_fail("Access denied!")
             sys.exit(0)
 
 class BaseClientForm(BaseForm):
-    def is_admin(self):
-        return False
     def get_base_template(self):
         return 'template/client_base.html'
     def get_redirect(self):
         return '/index.html'
     def before_process(self):
         self.r.title = 'Internet Gateway. Client'
-
-        self.r.msg_unread = ''
-        messages = self.db.get_message_forclient(self.login)
-        logging.debug(len(messages))
-        if len(messages) > 0:
-            msgid, data, sender, reciever, text, time = messages[0]
-            last_visited = self.db.get_client_time(self.login)
-            t = Time()
-            if t.create(time) > t.create(last_visited):
-                self.r.msg_unread = '<img src="/unread.png">'
+    def authorize(self):
+        return True
 
 
 class BaseAdminForm(BaseForm):
-    def is_admin(self):
-        return True
     def get_base_template(self):
         return 'template/admin_base.html'
     def get_redirect(self):
         return '/admin/index.html'
     def before_process(self):
         self.r.title = 'Internet Gateway. Admin'
-
-        self.r.msg_unread = ''
-        messages = self.db.get_all_messages()
-        if len(messages) > 0:
-            msgid, data, sender, reciever, text, time = messages[0]
-            last_visited = self.db.get_admin_time(self.login)
-            t = Time()
-            if t.create(time) > t.create(last_visited):
-                self.r.msg_unread = '<img src="/unread.png">'
+    def authorize(self):
+        ip = os.environ["REMOTE_ADDR"]
+        sessionMan = Session(is_admin = True)
+        uid, sessionid = sessionMan.validate(self.db, self.form, ip)
+        sessionMan.inject(self.r, sessionid)
+        self.login = uid
+        return uid != None
 
 
 
