@@ -7,32 +7,32 @@ LOGFILE=/var/log/easy.log
 adduser --no-create-home --disabled-login easy
 
 # Crontab entry
-#TODO!
+#   TODO!
 
-# Cehck instalation dir
-if [ -e ${INSTDIR} ]; then 
+# Make sure instalation dir exist
+if [ -e ${INSTDIR} ]; then
     echo;
 else
     # Create instalation dir
     mkdir ${INSTDIR}
+fi
+
+# Copy file
+cp -R ./bin ${INSTDIR}/
+cp -R ./cfg ${INSTDIR}/
+cp -R ./db ${INSTDIR}/
+cp -R ./web ${INSTDIR}/
+
+# Make sure database exist
+if [ -e ${INSTDIR}/db/easy.db ]; then
+    echo;
+else
     # Create DB
     cd ${INSTDIR}/db && python init_db.py
 fi
 
-# Copy files, set up permissions
-cp -R ./bin ${INSTDIR}/
-cp -R ./cfg ${INSTDIR}/
-cp -R ./web ${INSTDIR}/
+# Chenge ownership
 chown -R easy:easy ${INSTDIR}/
-chmod 0755 ${INSTDIR}
-chmod -R 0500 ${INSTDIR}/*
-chmod 0700 ${INSTDIR}/bin
-chmod 0700 ${INSTDIR}/cfg
-chmod 0700 ${INSTDIR}/db
-chmod 0700 ${INSTDIR}/db/easy.db
-chmod 0700 ${INSTDIR}/web
-chmod 0700 ${INSTDIR}/web/cgi-bin
-
 
 # Create LOG file
 if [ -e ${INSTDIR} ]; then 
