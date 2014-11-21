@@ -3,21 +3,23 @@
 INSTDIR=/usr/local/easy
 LOGFILE=/var/log/easy.log
 
-#TODO 
-# 1. Create user + 
-# 2. Create DB
-# 3. Update Cron  
-
 # Create user easy
 adduser --no-create-home --disabled-login easy
 
-#Create, prepare and copy to install dir
+# Crontab entry
+#TODO!
+
+# Cehck instalation dir
 if [ -e ${INSTDIR} ]; then 
-echo ;
+    echo;
 else
-mkdir ${INSTDIR};
+    # Create instalation dir
+    mkdir ${INSTDIR}
+    # Create DB
+    cd ${INSTDIR}/db && python init_db.py
 fi
 
+# Copy files, set up permissions
 cp -R ./bin ${INSTDIR}/
 cp -R ./cfg ${INSTDIR}/
 cp -R ./web ${INSTDIR}/
@@ -30,21 +32,21 @@ chmod 0700 ${INSTDIR}/web
 chmod 0700 ${INSTDIR}/web/cgi-bin
 
 
-#Create LOG file
+# Create LOG file
 if [ -e ${INSTDIR} ]; then 
 echo --Install-- >> ${LOGFILE}
 else
 echo --Install-- > ${LOGFILE}
 fi
-
 chown easy:easy ${LOGFILE}
-chmod 0600 ${LOGFILE}
+chmod 0644 ${LOGFILE}
 
 
-#Create service
+# Install service
 cp ./easy /etc/init.d
+# Debian
 update-rc.d easy defaults
 update-rc.d easy enable
-
-#insserv -r easybs
-#insserv easybs
+# SuSE
+#insserv -r easy
+#insserv easy
