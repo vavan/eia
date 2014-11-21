@@ -115,9 +115,8 @@ class BaseForm:
             print "Content-Type: text/html\n\n"
             print html
 
-
     def run(self):
-        if self.authorize() != None:
+        if self.authorize():
             html = self.base_process()
         else:
             html = self.alert("Access denied!")

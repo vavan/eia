@@ -28,6 +28,8 @@ chmod 0755 ${INSTDIR}
 chmod -R 0500 ${INSTDIR}/*
 chmod 0700 ${INSTDIR}/bin
 chmod 0700 ${INSTDIR}/cfg
+chmod 0700 ${INSTDIR}/db
+chmod 0700 ${INSTDIR}/db/easy.db
 chmod 0700 ${INSTDIR}/web
 chmod 0700 ${INSTDIR}/web/cgi-bin
 
