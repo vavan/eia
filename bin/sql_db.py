@@ -1,7 +1,7 @@
 import logging, sys
 from datetime import datetime
 from hashlib import md5
-from main import Client, Provider, Address, Rate, TrafLimit, Device
+from main import Client, Device
 from sql_conn import SqlConn
 
 
@@ -54,12 +54,12 @@ class DataBase:
 ### Admin ###
 
     def get_admin(self, uid):
-        return self.sql.select("select name, ip from admins where uid = '%s'"%(uid))[0]
+        return self.sql.select("select name from admins where uid = '%s'"%(uid))[0]
 
-    def update_admin(self, name, passwd, ip, uid):
+    def update_admin(self, name, passwd, uid):
         if passwd:
             passwd = ",passwd=MD5('%s')"%passwd
-        self.sql.update("update admins set name='%s', ip='%s'%s where uid = '%s'"%(name, ip, passwd, uid))
+        self.sql.update("update admins set name='%s'%s where uid = '%s'"%(name, passwd, uid))
 
     def set_admin_time(self, uid, time):
         self.sql.update("update admins set time='%s' where uid = '%s'"%(time, uid))
@@ -71,8 +71,7 @@ class DataBase:
 ### Clients ###
 
     def add_client(self):
-        self.sql.update("insert into users (name, passwd, account, acctlimit, traf, traflimit, rate) "
-            "values ('', '', 0, 0, 0, 0, %s)"%Rate.ALLWAYS_EXIST)
+        self.sql.update("insert into users (name, passwd, account) values ('', '', 0)")
         return self.sql.insert_id()
 
     def delete_client(self, uid):
@@ -80,56 +79,35 @@ class DataBase:
         return self.sql.insert_id()
 
     def get_clients(self):
-        raw_clients = self.sql.select("select uid, name, account, acctlimit,"
-                                      "rate, rates.price, mode, traf, traflimit "
-                                      "from users, rates "
-                                      "where rate = rates.id")
+        raw_clients = self.sql.select("select uid, name, account from users")
         clients = []
         for c in raw_clients:
-            client = Client( id = c[0], name = c[1],
-                            account = float(c[2]), acctlimit = float(c[3]),
-                            rate = Rate(id = c[4], price = float(c[5]), mode = c[6]),
-                            traf = TrafLimit(traf = float(c[7]), limit = float(c[8])) )
+            client = Client( *c )
             clients.append( client )
         return clients
 
     def get_client(self, uid):
-        c = self.sql.select("select uid, name, account, acctlimit,"
-                            "rate, rates.price, mode, traf, traflimit "
-                            "from users, rates "
-                            "where rate = rates.id and uid='%s'"%uid)
+        c = self.sql.select("select uid, name, account from users where uid='%s'"%uid)
         if len(c) == 1:
             c = c[0]
-            return Client( id = c[0], name = c[1],
-                           account = float(c[2]), acctlimit = float(c[3]),
-                            rate = Rate(id = c[4], price = float(c[5]), mode = c[6]),
-                            traf = TrafLimit(traf = float(c[7]), limit = float(c[8])) )
+            return Client( *c )
         else:
             logging.error('Unknown or duplicate client id: %s'%uid)
             return None
 
-    def set_traflimit(self, uid, traflimit):
-        self.sql.update("update users set traflimit = %d, traf = 0 where uid=%s"%(traflimit, uid))
+    def update_client_account(self, uid, debit):
+        self.sql.update("update users set account = account - %f "
+                "where uid = %s"%(debit, uid))
 
-    def update_client_account(self, uid, mbytes, debit):
-        self.sql.update("update users set traf = traf + %f, account = account - %f "
-                "where uid = %s"%(mbytes, debit, uid))
-
-    def add_money(self, uid, money, acctlimit):
-        self.sql.update( "update users set account = account + %f, acctlimit = acctlimit + %f "
-                "where uid = %s"%(money, acctlimit, uid) )
+    def add_money(self, uid, money):
+        self.sql.update( "update users set account = account + %f "
+                "where uid = %s"%(money, uid) )
 
 
-    def modify_client(self, uid, name, passwd, rate):
+    def modify_client(self, uid, name, passwd):
         if passwd != '':
             passwd = ", passwd = '%s'"%passwd
-        self.sql.update("update users set name = '%s', rate = '%s'%s where uid = '%s'"%(name, rate, passwd, uid))
-
-
-    def get_peers_by_rate(self, rate_id):
-        clients = self.sql.select("select name from users where rate = '%s'"%rate_id)
-        providers = self.sql.select("select name from providers where rate = '%s'"%rate_id)
-        return clients + providers
+        self.sql.update("update users set name = '%s'%s where uid = '%s'"%(name, passwd, uid))
 
     def set_client_time(self, uid, time):
         self.sql.update("update users set time='%s' where uid = '%s'"%(time, uid))

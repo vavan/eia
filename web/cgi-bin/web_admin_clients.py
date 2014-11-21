@@ -17,13 +17,8 @@ class AdminClients(BaseAdminForm):
         body = ''
 
         for c in clients:
-            traf = float(c.traf.traf)
-            traflimit = int(c.traf.limit)
             
-            if c.traf.limit != 0 and c.traf.traf > c.traf.limit:
-                status = self.text.STATUS_BLOCKED_BY_LIMIT
-                status_color = 'class="red"'
-            elif c.account <= c.acctlimit:
+            if c.account <= 0:
                 status = self.text.STATUS_BLOCKED_BY_MONEY
                 status_color = 'class="red"'
             else:
@@ -33,7 +28,7 @@ class AdminClients(BaseAdminForm):
             body += '<tr %s>'%self.odd()
             body += '<td class="first"><a href="web_admin_clients.py?$session_link&client=%s">%s</a></td>'%(c.id, c.id)
             body += '<td>%s</td>'%c.name
-            body += '<td>%.2f</td>'%(c.account - c.acctlimit)
+            body += '<td>%.2f</td>'%(c.account)
             body += '<td %s>%s</td>'%(status_color, status)
             body += '</tr>\n'
         
@@ -47,7 +42,7 @@ class AdminClients(BaseAdminForm):
     def modify_client(self, uid):
         name = self.getvalue('name')
         passwd = self.getvalue('password')
-        self.db.modify_client(uid, name, passwd, 1)
+        self.db.modify_client(uid, name, passwd)
 
     def add_client(self):
         return self.db.add_client()

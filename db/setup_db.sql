@@ -74,11 +74,7 @@ CREATE TABLE users (
   name varchar(255) NOT NULL,
   passwd varchar(15) NOT NULL,
   account float NOT NULL,
-  acctlimit float NOT NULL,
-  traf float NOT NULL,
-  traflimit float NOT NULL,
   descr text,
-  rate INTEGER NOT NULL,
   time datetime,
   PRIMARY KEY  (uid)
 ) ;

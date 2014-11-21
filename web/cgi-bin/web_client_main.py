@@ -23,7 +23,7 @@ class Form(BaseClientForm):
         if user.account >= cost:
             self.db.start_alive(user.id, device.id, duration*60)
             self.db.update_debits(user.id, duration, cost, 0, datetime.datetime.now())
-            self.db.update_client_account(user.id, duration, cost)
+            self.db.update_client_account(user.id, cost)
             self.alert("%s starts playing on %s. Paid %d$CR"%(user.name, device.name, cost), '/cgi-bin/web_client_main.py', '#00FF00')
         else:
             self.alert("Your balance is too low", '/cgi-bin/web_client_main.py', '#FF0000')

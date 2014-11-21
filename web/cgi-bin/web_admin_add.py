@@ -16,29 +16,7 @@ class Totals:
         self.debt = 0
 
 class AdminAdd(BaseAdminForm):
-    
-    def prepare_client(self, client):
-        if client.id in self.stat:
-            client_traf = self.stat[client.id]
-            traf = client_traf[0]
-        else:
-            traf = 0
-        self.total.traf += traf
-        
-        if client.id in self.credits:
-            money = float(self.credits[client.id])
-            if money > 0:
-                self.total.money += money
-        else:
-            money = 0
-        
-        account = client.account
-        if account >= 0:
-            self.total.balance += account
-
-        self.total.debt += abs(client.acctlimit)
-        return (traf, money)
-    
+       
     def show_adds_list(self, time_range, selected):
         clients = self.db.get_clients()
         clients.sort(key = lambda x : int(x.id))
@@ -57,16 +35,13 @@ class AdminAdd(BaseAdminForm):
                
             body += '<tr %s>'%self.odd()
             body += '<td class="first">%s</td>'%(c.name)
-            
-            traf, money = self.prepare_client(c)
-            account = c.account - c.acctlimit
-            
+                      
             if str(selected) == str(c.id):
                 mark = ' class="selected"'
             else:
                 mark = ''
                 
-            body += "<td%s>%d</td>"%(mark, account)
+            body += "<td%s>%d</td>"%(mark, c.account)
             
             body += "<td>"
             body += '<input class="btn" type="submit" name=add1_%s value="&nbsp+1&nbsp">'%c.id
@@ -76,29 +51,7 @@ class AdminAdd(BaseAdminForm):
             body += "</td></tr>\n"
             
         return body
-   
-    def show_credits(self, time_range):
-        body = ''
-        total = 0
-        credits = self.db.get_credits_history(time_range)
-        self.odd(0)
-        if credits: 
-            for credit in credits:
-            
-                client = credit[0]
-                money = float(credit[1])
-                when = credit[2]
-                paytype = MoneyAdds.type_name(int(credit[3]), self.text)
-                
-                if money > 0:
-                    total += money
-                body += '<tr %s>'%self.odd()
-                body += '<td class="first">%s</td><td>%s</td><td>%.2f</td><td>%s</td></tr>\n'%( when, client, money, paytype )
-            
-        body += '<tr class="bottom">'
-        body += '<td class="first">TOTAL</td><td></td><td>%.2f</td><td></td></tr>\n'%(total)
-        return body, total
-        
+          
     def get_providers_list(self):
         providers = self.db.get_providers()
         provs = []
@@ -113,7 +66,6 @@ class AdminAdd(BaseAdminForm):
 
         self.r.select_month = c.select_month()
         self.r.adds_list = self.show_adds_list(time_range, selected)
-        #self.r.credit_history, income = self.show_credits(time_range)
               
         f = file("template/admin_add.html")
         html = f.read()
@@ -141,7 +93,7 @@ class AdminAdd(BaseAdminForm):
         if uid > 0 and adds != None and adds.get_value() != 0:
             selected = uid
             acct, limit = adds.apply()
-            self.db.add_money(uid, acct, limit)
+            self.db.add_money(uid, acct)
             self.db.update_credits(uid, adds.get_value(), adds.get_type(), self.login)
         else:
             selected = 0

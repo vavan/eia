@@ -22,34 +22,13 @@ VERSION = '0.10.0'
 import logging
 
 
-class Provider:
-    def __init__(self, id, ip, iface, name, rate):
-        self.id = id
-        self.ip = ip
-        self.rate = rate
-        self.name = name
-        self.iface = iface
 
 class Client:
-    def __init__(self, id, name, account, acctlimit, rate, traf):
+    def __init__(self, id, name, account):
         self.id = id
-        self.addresses = []
         self.name = name
-        self.account = account
-        self.acctlimit = acctlimit
-        self.rate = rate
-        self.traf = traf
+        self.account = float(account)
 
-class TrafLimit:
-    def __init__(self, traf, limit):
-        self.traf = traf
-        self.limit = limit
-    
-class Address:
-    def __init__(self, uid, ip, mac):
-        self.uid = uid
-        self.ip = ip
-        self.mac = mac
 
 class Device:
     def __init__(self, id, name, mac):
@@ -57,47 +36,6 @@ class Device:
         self.name = name
         self.mac = mac
 
-class Rate:
-
-    TRAFBASED = 'traf_based'
-    DAILY = 'daily'
-    MONTHLY = 'monthly'
-    MINUTELY = 'minutely'
-    
-    ALLWAYS_EXIST = 1
-
-    def __init__(self, id, price, mode):
-        if mode == None:
-            mode = self.TRAFBASED
-        self.id = id
-        self.mode = mode
-        self.price = price
-        self.is_updated = False
-        
-    def apply(self, mbytes, mode):
-        if mode == None:
-            mode = self.TRAFBASED
-        if self.mode == self.TRAFBASED:
-            return mbytes * self.price
-        elif self.mode == mode:
-            if not self.is_updated:
-                self.is_updated = True
-                return self.price
-        return 0
-            
-    def get_full_name(self, text):
-        return '#%02d %s'%(int(self.id), self.get_name(text))
-
-    def get_name(self, text):
-        if self.mode == self.TRAFBASED:
-            name = text.RATE_TRAFBASED
-        elif self.mode == self.DAILY:
-            name = text.RATE_DAYLY
-        elif self.mode == self.MINUTELY:
-            name = text.RATE_MINUTELY
-        else:
-            name = text.RATE_MONTHLY
-        return '%s %s'%(self.price, name)
         
 
 class MoneyAdds:
