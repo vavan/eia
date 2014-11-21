@@ -43,18 +43,12 @@ class Session:
         db.expire_session(self.timeout)
         if (form.has_key("onLogin")):
             login, passwd = self.get_form_cred(form)
-            user_type = ''
-            if self.is_admin:
-                uid = db.authorize_admin(login, passwd, ip)
-                user_type = 'ADMIN'
-            else:
-                uid = db.authorize_client(login, passwd, ip)
-                user_type = 'USER'
+            uid = db.authorize_admin(login, passwd, ip)
             if uid:
                 sid = self.generate_sid()
                 db.insert_session(sid, ip, uid)
             else:
-                logging.error( "Can not authorize %s: '%s'-'%s' from %s"%(user_type, login, passwd, ip))
+                logging.error( "Can not authorize '%s'-'%s' from %s"%(login, passwd, ip))
         else:
             sid = self.get_form_sid(form)
             uid = db.get_session(sid, ip, self.timeout)
