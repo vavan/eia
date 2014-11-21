@@ -15,7 +15,7 @@ class RouterHal:
         logging.debug("Block device: %s"%mac)
         self.list.append(mac)
         self.router.add(mac)
-        self.db.add_cache(mac
+        self.db.add_cache(mac)
 
     def remove(self, mac):
         logging.debug("UnBlock device: %s"%mac)
