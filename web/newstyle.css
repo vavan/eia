@@ -67,7 +67,6 @@
 .edit-unit label.left {float:left; width:150px; margin:0 0 0 10px; padding:2px; font-size:110%;}
 
 .edit-unit select.combo {width:281px; padding:2px; margin: 2px; border:solid 1px rgb(200,200,200); font-family:verdana,arial,sans-serif; font-size:110%;}
-.edit-unit input {font-family:verdana,arial,sans-serif; font-size:110%;}
 .edit-unit input.c_field {width:275px; padding:2px; margin: 2px 2px 2px 2px; border:solid 1px rgb(200,200,200); font-family:verdana,arial,sans-serif; font-size:110%;background-color:#FFFFFF;}
 .edit-unit input.field {width:275px; padding:2px; margin: 2px; border:solid 1px rgb(200,200,200); font-family:verdana,arial,sans-serif; font-size:110%;}
 .edit-unit textarea {width:275px; padding:2px; margin: 2px; border:solid 1px rgb(200,200,200); font-family:verdana,arial,sans-serif; font-size:110%;}
@@ -92,9 +91,10 @@
 
 .register-switch-input {
   display: none;
-}
+  }
 
 .register-switch-label {
+  font-size: 28px;
   float: left;
   line-height: 32px;
   color: white;
@@ -132,15 +132,13 @@
 }
 
 .register-button {
+  font-size: 28px;
   display: block;
   width: 100%;
   height: 42px;
   margin-top: 25px;
-  font-size: 16px;
   font-weight: bold;
   color: #494d59;
-  text-align: center;
-  text-shadow: 0 1px rgba(255, 255, 255, 0.5);
   background: #fcfcfc;
   border: 1px solid;
   border-color: #d8d8d8 #d1d1d1 #c3c3c3;

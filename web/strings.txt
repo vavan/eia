@@ -110,3 +110,6 @@ DEVICE_LINK;Devices;Пристрої;
 DEVICES_CAPTION;Devices;Пристрої;
 DEVICE_EDIT;Edit Device;a;
 DEVICE_DETAILS;Device Details;a;
+CR;cr;cr;
+MIN;min;min;
+ALERT_CAPTION;Alert;Alert;

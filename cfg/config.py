@@ -12,6 +12,8 @@ web_user = 'easy'
 web_address = '0.0.0.0'
 web_port = 80
 
+router = {'username':'admin', 'password':'dostup3369', 'addr': '10.0.0.1'}
+
 language = 0
 
 log_file = '/var/log/easy.log'

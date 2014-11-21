@@ -20,7 +20,14 @@ class BaseForm:
         self.db = sql_db.DataBase(config.sql)
         self.login = ''
         self.__index = 0
-
+        self.override = False
+        self.r = Request()
+        self.form = cgi.FieldStorage()
+        self.f = self.form
+        self.text = TextProcessor().get_language(config.language)
+        self.r.redirect_to = '/index.html'
+        self.r.title = 'Internet Gateway. Client'
+        self.r.alert_color = '#FF0000'
 
     def is_admin(self):
         return False
@@ -74,69 +81,65 @@ class BaseForm:
             is_ip_ok = False
         if not is_ip_ok:
             msg = '$INCORRECT_IP: %s'%ip
-            self.on_fail(msg, redirect_to)
+            self.alert(msg, redirect_to)
             sys.exit(0)
 
     def validate_mac(self, mac, redirect_to):
         mac_re = re.compile(r'[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}:[0-9A-F]{2}$')
         if not mac_re.match(mac):
             msg = '$INCORRECT_MAC: %s'%mac
-            self.on_fail(msg, redirect_to)
+            self.alert(msg, redirect_to)
             sys.exit(0)
 
 
 
-    def on_fail(self, msg, redirect_to = None):
+    def alert(self, msg, redirect_to = None, color = None):
         f = file("template/err.html")
         html = f.read()
-        html = html.replace('$error', msg)
-        if redirect_to == None:
-            redirect_to = self.get_redirect()
-        html = html.replace('$redirect_to', redirect_to)
+        self.r.alert_text = msg
+        if redirect_to != None:
+            self.r.redirect_to = redirect_to
+        if color != None:
+            self.r.alert_color = color
+        self.override = True
         html = Replace(html).run(self.r, self.text)
         print "Content-Type: text/html\n\n"
         print html
 
-    def on_success(self):
-        html = file(self.get_base_template()).read()
+    def base_process(self):
+        derived = self.process()
+        if not self.override:
+            self.r.derived = derived
+            html = file(self.get_base_template()).read()
+            html = Replace(html).run(self.r, self.text)
+            print "Content-Type: text/html\n\n"
+            print html
 
-        self.before_process()
-        self.r.derived = self.process()
-
-        html = Replace(html).run(self.r, self.text)
-        print "Content-Type: text/html\n\n"
-        print html
 
     def run(self):
-        self.form = cgi.FieldStorage()
-        self.f = self.form
-        self.r = Request()
-        self.text = TextProcessor().get_language(config.language)
-
         if self.authorize() != None:
-            self.on_success()
+            html = self.base_process()
         else:
-            self.on_fail("Access denied!")
-            sys.exit(0)
+            html = self.alert("Access denied!")
 
 class BaseClientForm(BaseForm):
+    def __init(self):
+        BaseForm.__nint__(self)
+        self.r.redirect_to = '/index.html'
+        self.r.title = 'Internet Gateway. Client'
     def get_base_template(self):
         return 'template/client_base.html'
-    def get_redirect(self):
-        return '/index.html'
-    def before_process(self):
-        self.r.title = 'Internet Gateway. Client'
     def authorize(self):
         return True
 
 
 class BaseAdminForm(BaseForm):
+    def __init(self):
+        BaseForm.__nint__(self)
+        self.r.redirect_to = '/admin/index.html'
+        self.r.title = 'Internet Gateway. Admin'
     def get_base_template(self):
         return 'template/admin_base.html'
-    def get_redirect(self):
-        return '/admin/index.html'
-    def before_process(self):
-        self.r.title = 'Internet Gateway. Admin'
     def authorize(self):
         ip = os.environ["REMOTE_ADDR"]
         sessionMan = Session(is_admin = True)

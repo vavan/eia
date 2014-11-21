@@ -66,7 +66,7 @@ class AdminAdd(BaseAdminForm):
             else:
                 mark = ''
                 
-            body += "<td%s>%.2f</td>"%(mark, account)
+            body += "<td%s>%d</td>"%(mark, account)
             
             body += "<td>"
             body += '<input class="btn" type="submit" name=add1_%s value="&nbsp+1&nbsp">'%c.id

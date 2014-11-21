@@ -36,7 +36,7 @@ class AAA:
             hal.add(i)
         for i in old:
             hal.remove(i)
-        hal.apply()
+
 
 def log_except(exc):
     stream = StringIO.StringIO()

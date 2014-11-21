@@ -8,17 +8,7 @@ from web_base import BaseAdminForm
 
 class AdminClients(BaseAdminForm):
         
-    def show_rate_options(self, rate_id):
-        out = ''
-        rates = self.db.get_rates()
-        for rate in rates:
-            if rate_id == rate.id:
-                selected = 'selected'
-            else:
-                selected = ''
-            out += '<option value="%s" %s>%s</option>\n'%(rate.id, selected, rate.get_full_name(self.text))
-        return out
-    
+   
     def show_clients_table(self):
         clients = self.db.get_clients()
         clients.sort(key = lambda x : int(x.id))
@@ -44,7 +34,6 @@ class AdminClients(BaseAdminForm):
             body += '<td class="first"><a href="web_admin_clients.py?$session_link&client=%s">%s</a></td>'%(c.id, c.id)
             body += '<td>%s</td>'%c.name
             body += '<td>%.2f</td>'%(c.account - c.acctlimit)
-            body += '<td>%s</td>'%c.rate.get_full_name(self.text)
             body += '<td %s>%s</td>'%(status_color, status)
             body += '</tr>\n'
         
@@ -54,13 +43,11 @@ class AdminClients(BaseAdminForm):
         client = self.db.get_client(uid)
         self.r.client = uid
         self.r.name = client.name
-        self.r.rate_options = self.show_rate_options(client.rate.id)
     
     def modify_client(self, uid):
         name = self.getvalue('name')
         passwd = self.getvalue('password')
-        rate = self.getvalue('rate', int)
-        self.db.modify_client(uid, name, passwd, rate)
+        self.db.modify_client(uid, name, passwd, 1)
 
     def add_client(self):
         return self.db.add_client()

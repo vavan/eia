@@ -147,6 +147,12 @@ class DataBase:
                 devices.append( Device( *row ) )
         return devices
 
+    def get_device(self, device_id):
+        raw_device = self.sql.select( "select id, name, mac from devices where id='%s'"%device_id )
+        if raw_device and len(raw_device) == 1:
+            raw_device = raw_device[0]
+            return Device( *raw_device )
+
     def add_device(self, name, mac):
         self.sql.update("insert into devices (name, mac) values ('%s', '%s')"%(name, mac))
 
@@ -157,25 +163,27 @@ class DataBase:
     def get_cache(self):
         return self.sql.select( "select mac from cache" )
 
-    def update_cache(self, mac_list):
-        self.sql.update("delete from cache")
-        for i in mac_list:
-            self.sql.update("insert into cache (mac) values ('%s')"%(i))
+    def add_cache(self, mac):
+        self.sql.update("insert into cache (mac) values ('%s')"%(mac))
 
+    def delete_cache(self, mac):
+        self.sql.update("delete from cache where mac = '%s'"%(mac))
 
 ### Alive ###
     def get_alive_mac(self):
         return self.sql.select( "select mac from alive, devices where alive.device = devices.id" )
 
-    def check_alive(self, user):
-        self.sql.update("select device, time, duration from alive where user = '%s'"%(user))
+    def get_alive_by_user(self, user):
+        return self.sql.select("select device, (duration + strftime('%%s', time) - strftime('%%s','now')) from alive where user = '%s'"%(user))
+
+    def get_alive_by_device(self, device):
+        return self.sql.select("select name from alive, users where device = '%s' and users.uid = alive.user"%(device))
 
     def start_alive(self, user, device, duration):
         self.sql.update("insert into alive (user, device, time, duration) values ('%s', '%s', datetime('now'), '%s')"%(user, device, duration))
 
     def expire_alive(self):
-        self.sql.update("delete from alive where (strftime('%%s','now') - "
-                        "strftime('%%s', time)) > duration")
+        self.sql.update("delete from alive where (strftime('%s','now') - strftime('%s', time)) > duration")
 
 
 
