@@ -16,7 +16,7 @@ class Totals:
         self.debt = 0
 
 class AdminAdd(BaseAdminForm):
-       
+      
     def show_adds_list(self, time_range, selected):
         clients = self.db.get_clients()
         clients.sort(key = lambda x : int(x.id))

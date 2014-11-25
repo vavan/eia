@@ -8,12 +8,12 @@ from main import Device
 from web_base import BaseAdminForm
 
 
-class AdminRates(BaseAdminForm):
-          
+class AdminRates(BaseAdminForm):         
           
     def do_add(self):
         name = self.getvalue('name')
         mac = self.getvalue('mac')
+        mac = mac.replace('-', ':')
         redirect_to = 'web_admin_devices.py?$session_link'
         self.validate_mac(mac, redirect_to)
         self.db.add_device(name, mac)
@@ -32,15 +32,14 @@ class AdminRates(BaseAdminForm):
             out += '<td>%s</td>'%d.mac
             out += '</tr>\n'
         return out
-    
+           
     def process(self):
         if 'add' in self.f:
             self.do_add()
         elif 'delete' in self.f:
             record_id = self.getvalue("delete", int)
             self.do_delete(record_id)
-    
-
+        
         self.r.devices = self.show()
         
         f = file("template/admin_devices.html")

@@ -74,6 +74,7 @@ CREATE TABLE users (
   name varchar(255) NOT NULL,
   passwd varchar(15) NOT NULL,
   account float NOT NULL,
+  super INTEGER, 
   descr text,
   time datetime,
   PRIMARY KEY  (uid)
@@ -87,6 +88,7 @@ CREATE TABLE devices (
   id INTEGER,
   name varchar(255) NOT NULL,
   mac varchar(20) NOT NULL,
+  ip varchar(15),  
   PRIMARY KEY  (id)
 ) ;
 
@@ -105,6 +107,6 @@ CREATE TABLE alive (
 
 CREATE TABLE cache (
   id INTEGER,
-  mac varchar(20) NOT NULL,
+  device INTEGER NOT NULL,
   PRIMARY KEY  (id)
 ) ;

@@ -7,7 +7,10 @@ from web_base import BaseAdminForm
 
 
 class AdminClients(BaseAdminForm):
-        
+
+    def __init__(self):
+        BaseAdminForm.__init__(self)
+
    
     def show_clients_table(self):
         clients = self.db.get_clients()

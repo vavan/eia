@@ -5,22 +5,29 @@ import router
 class RouterHal:
     def __init__(self, db):
         self.db = db
-        self.list = map(lambda x: x[0], self.db.get_cache())
+        self.cache = dict(self.db.get_cache())
         self.router = router.Router()
 
     def get(self):
-        return self.list
+        return self.cache.keys()
+        
+    def refresh_ip(self):
+        for ip, mac in self.router.get_map():
+            self.update_device_ip(mac, ip)
+        
+    def add(self, device):
+        logging.debug("Block device: %s"%device)
+        device = self.db.get_device(device)
+        self.cache[device] = device.mac
+        #self.router.add(device.mac)
+        self.db.add_cache(device.id)
 
-    def add(self, mac):
-        logging.debug("Block device: %s"%mac)
-        self.list.append(mac)
-        self.router.add(mac)
-        self.db.add_cache(mac)
-
-    def remove(self, mac):
-        logging.debug("UnBlock device: %s"%mac)
-        self.list.remove(mac)
-        self.router.remove(mac)
-        self.db.delete_cache(mac)
+    def remove(self, device):
+        logging.debug("UnBlock device: %s"%device)
+        device = self.db.get_device(device)
+        del self.cache[device.id]
+        #self.router.remove(device.mac)
+        self.db.delete_cache(device.id)
+        #self.refresh_ip()
 
 

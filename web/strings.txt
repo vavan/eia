@@ -113,3 +113,6 @@ DEVICE_DETAILS;Device Details;a;
 CR;cr;cr;
 MIN;min;min;
 ALERT_CAPTION;Alert;Alert;
+SUPER;Super User;SU;
+YES;Yes;Yes;
+NO;No;No;

@@ -24,17 +24,19 @@ import logging
 
 
 class Client:
-    def __init__(self, id, name, account):
+    def __init__(self, id, name, account, super):
         self.id = id
         self.name = name
         self.account = float(account)
+        self.super = super
 
 
 class Device:
-    def __init__(self, id, name, mac):
+    def __init__(self, id, name, mac, ip):
         self.id = id
         self.name = name
         self.mac = mac
+        self.ip = ip
 
         
 

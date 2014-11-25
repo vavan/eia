@@ -79,22 +79,22 @@ class DataBase:
         return self.sql.insert_id()
 
     def get_clients(self):
-        raw_clients = self.sql.select("select uid, name, account from users")
+        raw_clients = self.sql.select("select uid, name, account, super from users")
         clients = []
         for c in raw_clients:
-            client = Client( *c )
-            clients.append( client )
+            clients.append( Client(*c) )
         return clients
 
     def get_client(self, uid):
-        c = self.sql.select("select uid, name, account from users where uid='%s'"%uid)
-        if len(c) == 1:
-            c = c[0]
-            return Client( *c )
-        else:
-            logging.error('Unknown or duplicate client id: %s'%uid)
-            return None
-
+        c = self.sql.select("select uid, name, account, super from users where uid='%s'"%uid)
+        c = c[0]
+        return Client( *c )
+            
+    def get_client_by_name(self, name):
+        c = self.sql.select("select uid, name, account, super from users where name='%s'"%name)
+        c = c[0]
+        return Client( *c )
+            
     def update_client_account(self, uid, debit):
         self.sql.update("update users set account = account - %f "
                 "where uid = %s"%(debit, uid))
@@ -102,7 +102,6 @@ class DataBase:
     def add_money(self, uid, money):
         self.sql.update( "update users set account = account + %f "
                 "where uid = %s"%(money, uid) )
-
 
     def modify_client(self, uid, name, passwd):
         if passwd != '':
@@ -118,7 +117,7 @@ class DataBase:
 
 ### Devices ###
     def get_devices(self):
-        raw_devices = self.sql.select( "select id, name, mac from devices" )
+        raw_devices = self.sql.select( "select id, name, mac, ip from devices" )
         devices = []
         if raw_devices:
             for row in raw_devices:
@@ -126,36 +125,49 @@ class DataBase:
         return devices
 
     def get_device(self, device_id):
-        raw_device = self.sql.select( "select id, name, mac from devices where id='%s'"%device_id )
-        if raw_device and len(raw_device) == 1:
+        raw_device = self.sql.select( "select id, name, mac, ip from devices where id='%s'"%device_id )
+        raw_device = raw_device[0]
+        return Device( *raw_device )
+
+    def get_device_by_ip(self, ip):
+        raw_device = self.sql.select( "select id, name, mac, ip from devices where ip='%s'"%ip )
+        if raw_device:
             raw_device = raw_device[0]
             return Device( *raw_device )
 
     def add_device(self, name, mac):
         self.sql.update("insert into devices (name, mac) values ('%s', '%s')"%(name, mac))
 
+    def update_device_ip(self, mac, ip):
+        self.sql.update("update devices set ip = '%s' where mac = '%s'"%(ip, mac))
+
     def delete_device(self, id):
         self.sql.update("delete from devices where id='%s'"%(id))
+        
+    
 
 ### Cache ###
     def get_cache(self):
-        return self.sql.select( "select mac from cache" )
+        return self.sql.select( "select device, mac from cache, devices where cache.device = devices.id" )
 
-    def add_cache(self, mac):
-        self.sql.update("insert into cache (mac) values ('%s')"%(mac))
+    def add_cache(self, device):
+        self.sql.update("insert into cache (device) values ('%s')"%(device))
 
-    def delete_cache(self, mac):
-        self.sql.update("delete from cache where mac = '%s'"%(mac))
+    def delete_cache(self, device):
+        self.sql.update("delete from cache where device = '%s'"%(device))
 
 ### Alive ###
-    def get_alive_mac(self):
-        return self.sql.select( "select mac from alive, devices where alive.device = devices.id" )
+    def get_alives(self):
+        return self.sql.select( "select devices from alive" )
 
     def get_alive_by_user(self, user):
         return self.sql.select("select device, (duration + strftime('%%s', time) - strftime('%%s','now')) from alive where user = '%s'"%(user))
 
     def get_alive_by_device(self, device):
         return self.sql.select("select name from alive, users where device = '%s' and users.uid = alive.user"%(device))
+
+    def cancel_alive(self, device):
+        return self.sql.select("delete from alive where device = '%s'"%(device))
 
     def start_alive(self, user, device, duration):
         self.sql.update("insert into alive (user, device, time, duration) values ('%s', '%s', datetime('now'), '%s')"%(user, device, duration))
@@ -192,7 +204,6 @@ class DataBase:
         else:
             logging.warning('Empty debits for UID: %s'%id)
 
-
     def get_debit_history(self, uid, from_to):
         query  = "select sum(mbytes), sum(debit), left(time,10) from debits"
         query += " where time > '%s' and time < '%s'"%from_to
@@ -202,7 +213,6 @@ class DataBase:
         for traf, debit, time in output:
             traf_debit_time.append( (float(traf), float(debit), time ))
         return traf_debit_time
-
 
     def get_debits(self, from_to):
         query =  "select sum(mbytes), sum(debit), uid from debits where time > '%s' and time < '%s'"%from_to

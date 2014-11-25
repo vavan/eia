@@ -91,8 +91,6 @@ class BaseForm:
             self.alert(msg, redirect_to)
             sys.exit(0)
 
-
-
     def alert(self, msg, redirect_to = None, color = None):
         f = file("template/err.html")
         html = f.read()
@@ -116,14 +114,14 @@ class BaseForm:
             print html
 
     def run(self):
+        self.prepare()
         if self.authorize():
             html = self.base_process()
         else:
             html = self.alert("Access denied!")
 
 class BaseClientForm(BaseForm):
-    def __init(self):
-        BaseForm.__nint__(self)
+    def prepare(self):
         self.r.redirect_to = '/index.html'
         self.r.title = 'Internet Gateway. Client'
     def get_base_template(self):
@@ -133,8 +131,7 @@ class BaseClientForm(BaseForm):
 
 
 class BaseAdminForm(BaseForm):
-    def __init(self):
-        BaseForm.__nint__(self)
+    def prepare(self):
         self.r.redirect_to = '/admin/index.html'
         self.r.title = 'Internet Gateway. Admin'
     def get_base_template(self):

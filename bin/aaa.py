@@ -18,8 +18,8 @@ class AAA:
         self.db = DataBase(config.sql)
 
     def get_planned(self):
-        alive = map(lambda x: x[0], self.db.get_alive_mac())
-        all = map(lambda x: x.mac, self.db.get_devices())
+        alive = map(lambda x: x[0], self.db.get_alives())
+        all = map(lambda x: x.id, self.db.get_devices())
         alive = set(alive)
         all = set(all)
         return all - alive

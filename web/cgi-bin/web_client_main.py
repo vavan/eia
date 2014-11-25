@@ -25,19 +25,20 @@ class Form(BaseClientForm):
             self.db.update_debits(user.id, duration, cost, 0, datetime.datetime.now())
             self.db.update_client_account(user.id, cost)
             self.alert("%s starts playing on %s. Paid %d$CR"%(user.name, device.name, cost), '/cgi-bin/web_client_main.py', '#00FF00')
+            hal = RouterHal(self.db)
+            hal.remove(device.id)
         else:
             self.alert("Your balance is too low", '/cgi-bin/web_client_main.py', '#FF0000')
     
-    def add_alive(self):
-        user = self.db.get_client(self.getvalue('user'))
-        device = self.db.get_device(self.getvalue('device'))
-
+    def add_alive(self, user, device):
         self.db.expire_alive()
         alive = self.db.get_alive_by_user(user.id)
         if alive:
             other_device, duration_left = alive[0]
             self.on_alredy_alive(user, other_device, duration_left)
         else:
+            if user.hidden:
+                self.db.cancel_alive(device.id)
             other_user = self.db.get_alive_by_device(device.id)
             if other_user:
                 self.alert("%s is used by %s"%(device.name, other_user[0][0]), '/cgi-bin/web_client_main.py', '#FF0000')
@@ -49,28 +50,47 @@ class Form(BaseClientForm):
         clients = self.db.get_clients()
         length = len(clients)
         for c in clients:
-            body += '<input type="radio" name="user" value="%s" id="u%s" class="register-switch-input">'%(c.id, c.name)
-            body += '<label style="width:%0.2d%%;" for="u%s" class="register-switch-label">%s:&nbsp%d$CR</label>'%(100/length, c.name, c.name, c.account)
+            if not c.super:
+                body += '<input type="radio" name="user" value="%s" id="u%s" class="register-switch-input">'%(c.id, c.name)
+                body += '<label style="width:%0.2d%%;" for="u%s" class="register-switch-label">%s:&nbsp%d$CR</label>'\
+                %(100/length, c.name, c.name, c.account)
         return body
         
-    def show_devices(self):
+    def show_devices(self, selected):
         body = ''
         devices = self.db.get_devices()
         length = len(devices)
         for d in devices:
-            body += '<input type="radio" name="device" value="%s" id="d%s" class="register-switch-input">'%(d.id, d.name)
+            if d.id == selected:
+                checked = 'checked'
+            else:
+                checked = ''
+            body += '<input type="radio" name="device" value="%s" id="d%s" class="register-switch-input" %s>'%(d.id, d.name, checked)
             body += '<label style="width:%0.2d%%;" for="d%s" class="register-switch-label">%s</label>'%(100/length, d.name, d.name)
         return body
         
     def show(self):
-        if 'start' in self.f:
-            self.add_alive()
+        ip = os.environ["REMOTE_ADDR"]
+        device = self.db.get_device_by_ip(ip)
 
-        self.r.users = self.show_users()
-        self.r.devices = self.show_devices()
-             
-        f = file("template/client_main.html")
-        html = f.read()
+        show = True
+        if 'start' in self.f and device:
+            if 'user_name' in self.f:
+                user = self.db.get_client_by_name(self.getvalue('user_name'))
+            else:
+                user = self.db.get_client(self.getvalue('user'))
+            if user.super:
+                show = False
+            #device = self.db.get_device(device)
+            self.add_alive(user, device)
+
+        if show:
+            self.r.users = self.show_users()
+            self.r.devices = self.show_devices(device)
+            f = file("template/client_main.html")
+            html = f.read()
+        else:
+            html = ''
         return html
 
     def process(self):
