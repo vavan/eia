@@ -25,6 +25,7 @@ class AAA:
         return all - alive
 
     def main(self):
+        self.refresh_ip()
         self.db.expire_alive()
         hal = RouterHal(self.db)
         actual = set(hal.get())

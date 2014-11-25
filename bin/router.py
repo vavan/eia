@@ -5,10 +5,17 @@ sys.path.append(os.path.join(os.path.dirname(sys.argv[0]), '../cfg'));import con
 
 
 
+"""
+<a href="connected_devices_computers_edit.php?&computer_name=android-beb7846b1eba950&staticIPAddress=10.0.0.27&ip_type=DHCP&connection=1&computer_mac=C8:AA:21:31:1D:12
+&comments=&index=-1" class="btn">Edit</a>
+"""
+
 class Router:
     row_re = re.compile('<th class="row-label alt">\d+</th>\s*<td>.*?</td>\s*<td>(.*?)</td>\s*<td>.*?</td>\s*<td.*?</td>\s*<td(.*?)</td>\s*')
     id_re = re.compile('<a href="managed_devices\.php\?&delete=(\d+)&del_type=0"')
-
+    map_re = re.compile('connected_devices_computers_edit\.php\?&computer_name=.*?'
+        '&staticIPAddress=(.*?)&ip_type=DHCP&connection=\d+&computer_mac=((?:[A-F0-9]{2}:){5}[A-F0-9]{2})\s*&comments=&index=')
+    
     def __init__(self):
         for k, v in config.router.iteritems():
             setattr(self, k, v)
@@ -49,3 +56,11 @@ class Router:
         logging.debug("Remove blocked device from router")
         response = urllib2.urlopen(url)
 
+    def address_map(self):
+        url = 'http://%s/connected_devices_computers.php'%self.addr
+        response = urllib2.urlopen(url)
+        map_page = response.read()
+        return Router.map_re.findall(map_page):
+            
+
+        

@@ -12,7 +12,8 @@ class RouterHal:
         return self.cache.keys()
         
     def refresh_ip(self):
-        for ip, mac in self.router.get_map():
+        address_map = self.router.address_map()
+        for ip, mac in address_map:
             self.update_device_ip(mac, ip)
         
     def add(self, device):
@@ -28,6 +29,6 @@ class RouterHal:
         del self.cache[device.id]
         #self.router.remove(device.mac)
         self.db.delete_cache(device.id)
-        #self.refresh_ip()
+        self.refresh_ip()
 
 
