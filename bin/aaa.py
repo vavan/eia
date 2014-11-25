@@ -25,12 +25,14 @@ class AAA:
         return all - alive
 
     def main(self):
-        self.refresh_ip()
         self.db.expire_alive()
         hal = RouterHal(self.db)
         actual = set(hal.get())
         planned = self.get_planned()
 
+        hal.refresh_ip()
+
+        
         new = planned - actual
         old = actual - planned
         for i in new:
