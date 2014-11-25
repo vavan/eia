@@ -60,7 +60,7 @@ class Router:
         url = 'http://%s/connected_devices_computers.php'%self.addr
         response = urllib2.urlopen(url)
         map_page = response.read()
-        return Router.map_re.findall(map_page):
+        return Router.map_re.findall(map_page)
             
 
         
