@@ -7,6 +7,7 @@ sys.path.append(os.path.join(os.path.dirname(sys.argv[0]), '../../bin'))
 from web_base import BaseClientForm
 from request import Time
 from rate import Rate
+from router_hal import RouterHal
 
 class Form(BaseClientForm):
 
@@ -37,7 +38,7 @@ class Form(BaseClientForm):
             other_device, duration_left = alive[0]
             self.on_alredy_alive(user, other_device, duration_left)
         else:
-            if user.hidden:
+            if user.super:
                 self.db.cancel_alive(device.id)
             other_user = self.db.get_alive_by_device(device.id)
             if other_user:

@@ -158,7 +158,7 @@ class DataBase:
 
 ### Alive ###
     def get_alives(self):
-        return self.sql.select( "select devices from alive" )
+        return self.sql.select( "select device from alive" )
 
     def get_alive_by_user(self, user):
         return self.sql.select("select device, (duration + strftime('%%s', time) - strftime('%%s','now')) from alive where user = '%s'"%(user))
