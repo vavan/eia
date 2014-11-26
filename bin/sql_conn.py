@@ -27,6 +27,9 @@ class SqlConn:
         self.con.create_function("UNIX_TIMESTAMP", 1, UNIX_TIMESTAMP_sql)
 
     def __find(self, database):
+        db_path = database
+        if os.path.exists(db_path):
+            return db_path
         pwd = os.path.dirname(sys.argv[0])
         db_path = pwd + '/' + database
         if os.path.exists(db_path):
