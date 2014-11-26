@@ -20,14 +20,14 @@ class RouterHal:
         logging.debug("Block device: %s"%device)
         device = self.db.get_device(device)
         self.cache[device] = device.mac
-        #self.router.add(device.mac)
+        self.router.add(device.mac)
         self.db.add_cache(device.id)
 
     def allow(self, device):
         logging.debug("UnBlock device: %s"%device)
         device = self.db.get_device(device)
         del self.cache[device.id]
-        #self.router.remove(device.mac)
+        self.router.remove(device.mac)
         self.db.delete_cache(device.id)
 
 

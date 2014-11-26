@@ -10,6 +10,7 @@ from rate import Rate
 from router_hal import RouterHal
 
 class Form(BaseClientForm):
+    SUPER_DURATION = 15
 
     def on_alredy_alive(self, user, device, duration_left):
         device = self.db.get_device(device)
@@ -30,8 +31,7 @@ class Form(BaseClientForm):
             self.db.update_debits(user.id, duration, cost, 0, datetime.datetime.now())
             self.db.update_client_account(user.id, cost)
             self.alert("%s starts playing on %s. Paid %d$CR"%(user.name, device.name, cost), '/cgi-bin/web_client_main.py', '#00FF00')
-            hal = RouterHal(self.db)
-            hal.allow(device.id)
+            RouterHal(self.db).allow(device.id)
     
     def add_alive(self, user, device):
         self.db.expire_alive()
@@ -42,11 +42,14 @@ class Form(BaseClientForm):
         else:
             if user.super:
                 self.db.cancel_alive(device.id)
-            other_user = self.db.get_alive_by_device(device.id)
-            if other_user:
-                self.alert("%s is used by %s"%(device.name, other_user[0][0]), '/cgi-bin/web_client_main.py', '#FF0000')
+                self.db.start_alive(user.id, device.id, SUPER_DURATION*60)
+                RouterHal(self.db).allow(device.id)
             else:
-                self.on_new_alive(user, device) 
+                other_user = self.db.get_alive_by_device(device.id)
+                if other_user:
+                    self.alert("%s is used by %s"%(device.name, other_user[0][0]), '/cgi-bin/web_client_main.py', '#FF0000')
+                else:
+                    self.on_new_alive(user, device) 
                 
     def show_users(self):
         body = ''
