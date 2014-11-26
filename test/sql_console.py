@@ -3,7 +3,7 @@ sys.path.append(os.path.join(os.path.dirname(sys.argv[0]), '../cfg'));import con
 sys.path.append(os.path.join(os.path.dirname(sys.argv[0]), '../bin'));from sql_conn import SqlConn
 
     
-db = SqlConn(config.sql)
+db = SqlConn({'database':sys.argv[1]})
 while(1):
     print '>',
     query = raw_input()
