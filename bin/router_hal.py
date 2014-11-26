@@ -14,7 +14,7 @@ class RouterHal:
     def refresh_ip(self):
         address_map = self.router.address_map()
         for ip, mac in address_map:
-            self.update_device_ip(mac, ip)
+            self.db.update_device_ip(mac, ip)
         
     def block(self, device):
         logging.debug("Block device: %s"%device)
