@@ -12,9 +12,12 @@ class RouterHal:
         return self.cache
         
     def refresh_ip(self):
-        address_map = self.router.address_map()
-        for ip, mac in address_map:
-            self.db.update_device_ip(mac, ip)
+        macs = self.db.get_devices_empty_ip()
+        if len(macs) > 0:
+            address_map = self.router.address_map()
+            for ip, mac in address_map:
+                if mac in macs:
+                    self.db.update_device_ip(mac, ip)
         
     def block(self, device):
         logging.debug("Block device: %s"%device)

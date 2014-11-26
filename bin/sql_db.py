@@ -145,6 +145,9 @@ class DataBase:
     def update_device_ip(self, mac, ip):
         self.sql.update("update devices set ip = '%s' where mac = '%s'"%(ip, mac))
 
+    def get_devices_empty_ip(self):
+        return self.sql.select("select mac from devices where ip = None")
+
     def delete_device(self, id):
         self.sql.update("delete from devices where id='%s'"%(id))
         
