@@ -10,7 +10,7 @@ from rate import Rate
 from router_hal import RouterHal
 
 class Form(BaseClientForm):
-    SUPER_DURATION = 15
+    SUPER_DURATION = 7
 
     def on_alredy_alive(self, user, device, duration_left):
         device = self.db.get_device(device)
