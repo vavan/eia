@@ -8,8 +8,8 @@ class RateSpec:
 
 
 class Rate:
-    WEEKDAY = RateSpec(0.1, 30, 60)
-    WEEKEND = RateSpec(0.1, 30, 120)
+    WEEKDAY = RateSpec(0.1, 0, 60)
+    WEEKEND = RateSpec(0.1, 0, 60)
     
     def is_today_weekend(self):
         return datetime.date.today().weekday() > 4

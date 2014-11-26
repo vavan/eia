@@ -111,7 +111,7 @@ DEVICES_CAPTION;Devices;Пристрої;
 DEVICE_EDIT;Edit Device;a;
 DEVICE_DETAILS;Device Details;a;
 CR;cr;cr;
-MIN;min;min;
+MIN;m;min;
 ALERT_CAPTION;Alert;Alert;
 SUPER;Super User;SU;
 YES;Yes;Yes;

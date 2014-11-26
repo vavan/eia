@@ -57,9 +57,9 @@ class Form(BaseClientForm):
         length = len(filter(lambda x: not x.super ,clients))
         for c in clients:
             if not c.super:
-                body += '<input type="radio" name="user" value="%s" id="u%s" class="register-switch-input">'%(c.id, c.name)
-                body += '<label style="width:%0.2d%%;" for="u%s" class="register-switch-label">%s:&nbsp%d$CR</label>'\
-                %(100/length, c.name, c.name, c.account)
+                body += '<input type="radio" name="user" value="%s" id="u%s" class="register-switch-input">'%(c.id, c.id)
+                body += '<label style="width:%0.2d%%;" for="u%s" class="register-switch-label">%s.%d</label>'\
+                %(100/length, c.id, c.name, c.account)
         return body
         
     def show_devices(self, selected):
@@ -71,10 +71,20 @@ class Form(BaseClientForm):
                 checked = 'checked'
             else:
                 checked = ''
-            body += '<input type="radio" name="device" value="%s" id="d%s" class="register-switch-input" %s>'%(d.id, d.name, checked)
-            body += '<label style="width:%0.2d%%;" for="d%s" class="register-switch-label">%s</label>'%(100/length, d.name, d.name)
+            body += '<input type="radio" name="device" value="%s" id="d%s" class="register-switch-input" %s>'%(d.id, d.id, checked)
+            body += '<label style="width:%0.2d%%;" for="d%s" class="register-switch-label">%s</label>'%(100/length, d.id, d.name)
         return body
         
+    def show_durations(self):
+        body = ''
+        durations = [10, 20, 30, 60]
+        length = len(durations)
+        for d in durations:
+            name = '%d$MIN'%(d)
+            body += '<input type="radio" name="duration" value="%s" id="r%s" class="register-switch-input">'%(d, d)
+            body += '<label style="width:%0.2d%%;" for="r%s" class="register-switch-label">%s</label>'%(100/length, d, name)
+        return body
+
     def show(self):
         ip = os.environ["REMOTE_ADDR"]
         device = self.db.get_device_by_ip(ip)
@@ -93,6 +103,7 @@ class Form(BaseClientForm):
         if show:
             self.r.users = self.show_users()
             self.r.devices = self.show_devices(device)
+            self.r.durations = self.show_durations()
             f = file("template/client_main.html")
             html = f.read()
         else:
