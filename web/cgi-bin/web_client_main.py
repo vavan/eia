@@ -42,7 +42,7 @@ class Form(BaseClientForm):
         else:
             if user.super:
                 self.db.cancel_alive(device.id)
-                self.db.start_alive(user.id, device.id, SUPER_DURATION*60)
+                self.db.start_alive(user.id, device.id, Form.SUPER_DURATION*60)
                 RouterHal(self.db).allow(device.id)
             else:
                 other_user = self.db.get_alive_by_device(device.id)
