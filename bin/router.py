@@ -4,12 +4,6 @@ import logging
 sys.path.append(os.path.join(os.path.dirname(sys.argv[0]), '../cfg'));import config
 
 
-
-"""
-<a href="connected_devices_computers_edit.php?&computer_name=android-beb7846b1eba950&staticIPAddress=10.0.0.27&ip_type=DHCP&connection=1&computer_mac=C8:AA:21:31:1D:12
-&comments=&index=-1" class="btn">Edit</a>
-"""
-
 class Router:
     row_re = re.compile('<th class="row-label alt">\d+</th>\s*<td>.*?</td>\s*<td>(.*?)</td>\s*<td>.*?</td>\s*<td.*?</td>\s*<td(.*?)</td>\s*')
     id_re = re.compile('<a href="managed_devices\.php\?&delete=(\d+)&del_type=0"')
