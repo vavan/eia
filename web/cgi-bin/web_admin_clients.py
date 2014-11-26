@@ -41,11 +41,19 @@ class AdminClients(BaseAdminForm):
         client = self.db.get_client(uid)
         self.r.client = uid
         self.r.name = client.name
+        if client.super:
+            self.r.super_yes = 'checked'
+            self.r.super_no = ''
+        else:
+            self.r.super_yes = ''
+            self.r.super_no = 'checked'
+        
     
     def modify_client(self, uid):
         name = self.getvalue('name')
-        passwd = self.getvalue('password')
-        self.db.modify_client(uid, name, passwd)
+        super = self.getvalue('super')
+        super = super == 'yes'
+        self.db.modify_client(uid, name, super)
 
     def add_client(self):
         return self.db.add_client()

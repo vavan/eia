@@ -30,7 +30,6 @@ class Client:
         self.account = float(account)
         self.super = super
 
-
 class Device:
     def __init__(self, id, name, mac, ip):
         self.id = id

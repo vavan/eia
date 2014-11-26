@@ -49,7 +49,7 @@ class Form(BaseClientForm):
     def show_users(self):
         body = ''
         clients = self.db.get_clients()
-        length = len(clients)
+        length = len(filter(lambda x: not x.super ,clients))
         for c in clients:
             if not c.super:
                 body += '<input type="radio" name="user" value="%s" id="u%s" class="register-switch-input">'%(c.id, c.name)

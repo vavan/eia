@@ -103,10 +103,14 @@ class DataBase:
         self.sql.update( "update users set account = account + %f "
                 "where uid = %s"%(money, uid) )
 
-    def modify_client(self, uid, name, passwd):
+    def modify_client(self, uid, name, super = False, passwd = ''):
         if passwd != '':
             passwd = ", passwd = '%s'"%passwd
-        self.sql.update("update users set name = '%s'%s where uid = '%s'"%(name, passwd, uid))
+        if super:
+            super = 1
+        else:
+            super = 0
+        self.sql.update("update users set name = '%s', super = '%s'%s where uid = '%s'"%(name, super, passwd, uid))
 
     def set_client_time(self, uid, time):
         self.sql.update("update users set time='%s' where uid = '%s'"%(time, uid))
