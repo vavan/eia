@@ -35,15 +35,15 @@ class Form(BaseClientForm):
     
     def add_alive(self, user, device):
         self.db.expire_alive()
-        alive = self.db.get_alive_by_user(user.id)
-        if alive:
-            other_device, duration_left = alive[0]
-            self.on_alredy_alive(user, other_device, duration_left)
+        if user.super:
+            self.db.cancel_alive(device.id)
+            self.db.start_alive(user.id, device.id, Form.SUPER_DURATION*60)
+            RouterHal(self.db).allow(device.id)
         else:
-            if user.super:
-                self.db.cancel_alive(device.id)
-                self.db.start_alive(user.id, device.id, Form.SUPER_DURATION*60)
-                RouterHal(self.db).allow(device.id)
+            alive = self.db.get_alive_by_user(user.id)
+            if alive:
+                other_device, duration_left = alive[0]
+                self.on_alredy_alive(user, other_device, duration_left)
             else:
                 other_user = self.db.get_alive_by_device(device.id)
                 if other_user:
