@@ -6,9 +6,10 @@ class RouterHal:
     def __init__(self, db):
         self.db = db
         self.router = router.Router()
+        self.cache = dict(self.db.get_cache())
 
     def get(self):
-        return dict(self.db.get_cache())
+        return self.cache
         
     def refresh_ip(self):
         address_map = self.router.address_map()
@@ -17,14 +18,16 @@ class RouterHal:
         
     def block(self, device):
         logging.debug("Block device: %s"%device)
-        device = self.db.get_device(device)
-        self.router.add(device.mac)
-        self.db.add_cache(device.id)
+        if device not in self.cache:
+            device = self.db.get_device(device)
+            self.db.add_cache(device.id)
+            self.router.add(device.mac)
 
     def allow(self, device):
         logging.debug("UnBlock device: %s"%device)
-        device = self.db.get_device(device)
-        self.router.remove(device.mac)
-        self.db.delete_cache(device.id)
+        if device in self.cache:
+            device = self.db.get_device(device)
+            self.db.delete_cache(device.id)
+            self.router.remove(device.mac)
 
 
