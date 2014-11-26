@@ -31,14 +31,13 @@ class AAA:
         planned = self.get_planned()
 
         hal.refresh_ip()
-
         
         new = planned - actual
         old = actual - planned
         for i in new:
-            hal.add(i)
+            hal.block(i)
         for i in old:
-            hal.remove(i)
+            hal.allow(i)
 
 
 def log_except(exc):

@@ -16,19 +16,18 @@ class RouterHal:
         for ip, mac in address_map:
             self.update_device_ip(mac, ip)
         
-    def add(self, device):
+    def block(self, device):
         logging.debug("Block device: %s"%device)
         device = self.db.get_device(device)
         self.cache[device] = device.mac
         #self.router.add(device.mac)
         self.db.add_cache(device.id)
 
-    def remove(self, device):
+    def allow(self, device):
         logging.debug("UnBlock device: %s"%device)
         device = self.db.get_device(device)
         del self.cache[device.id]
         #self.router.remove(device.mac)
         self.db.delete_cache(device.id)
-        self.refresh_ip()
 
 

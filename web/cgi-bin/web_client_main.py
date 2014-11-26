@@ -21,15 +21,17 @@ class Form(BaseClientForm):
         t = Time()
         today_used, debit = self.db.get_debit(user.id, t.current_day())
         cost = Rate().apply(today_used, duration)
-        if user.account >= cost:
+        if cost == None:
+            self.alert("You've used all available time for today", '/cgi-bin/web_client_main.py', '#FF0000')
+        elif user.account < cost:
+            self.alert("Your balance is too low", '/cgi-bin/web_client_main.py', '#FF0000')
+        else:
             self.db.start_alive(user.id, device.id, duration*60)
             self.db.update_debits(user.id, duration, cost, 0, datetime.datetime.now())
             self.db.update_client_account(user.id, cost)
             self.alert("%s starts playing on %s. Paid %d$CR"%(user.name, device.name, cost), '/cgi-bin/web_client_main.py', '#00FF00')
             hal = RouterHal(self.db)
-            hal.remove(device.id)
-        else:
-            self.alert("Your balance is too low", '/cgi-bin/web_client_main.py', '#FF0000')
+            hal.allow(device.id)
     
     def add_alive(self, user, device):
         self.db.expire_alive()
