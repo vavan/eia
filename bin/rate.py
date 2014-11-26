@@ -23,7 +23,7 @@ class Rate:
         total_time = today_used + duration
         if total_time < rate.max:
             free_time = rate.free - today_used
-            if free_time > 0 and free_time < duration:
+            if free_time >= 0 and free_time < duration:
                 cost = (duration - free_time) * rate.rate
             else:
                 cost = 0
