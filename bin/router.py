@@ -51,6 +51,7 @@ class Router:
         response = urllib2.urlopen(url)
 
     def address_map(self):
+        self.login()
         url = 'http://%s/connected_devices_computers.php'%self.addr
         response = urllib2.urlopen(url)
         map_page = response.read()
